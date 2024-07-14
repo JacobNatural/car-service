@@ -1,0 +1,73 @@
+{
+  "cars": [
+    {
+      "brand": "BMW",
+      "model": "X3",
+      "price": 250000,
+      "speed": 250,
+      "color": "BLACK",
+      "components": [
+        "ABS",
+        "AIR CONDITION"
+      ]
+    },
+    {
+      "brand": "AUDI",
+      "model": "6",
+      "price": 190000,
+      "speed": 220,
+      "color": "BLUE",
+      "components": [
+        "SUNROOF",
+        "AUTOMATIC EMERGENCY BRAKING",
+        "AIR CONDITION"
+      ]
+    },
+    {
+      "brand": "FIAT",
+      "model": "PANDA",
+      "price": 80000,
+      "speed": 160,
+      "color": "BROWN",
+      "components": [
+        "AIR CONDITION",
+        "BACKUP CAMERA"
+      ]
+    },
+    {
+      "brand": "AUDI",
+      "model": "4",
+      "price": 160000,
+      "speed": 200,
+      "color": "WHITE",
+      "components": [
+        "RADIO",
+        "AUTOMATIC EMERGENCY BRAKING"
+      ]
+    },
+    {
+      "brand": "FORD",
+      "model": "FOCUS",
+      "price": 110000,
+      "speed": 180,
+      "color": "BLACK",
+      "components": [
+        "SUNROOF",
+        "NAVIGATION",
+        "CB RADIO"
+      ]
+    },
+    {
+      "brand": "FORD",
+      "model": "MONDEO",
+      "price": 123000,
+      "speed": 190,
+      "color": "GOLD",
+      "components": [
+        "SUNROOF",
+        "AUTOMATIC EMERGENCY BRAKING",
+        "AUTOMATIC GEAR"
+      ]
+    }
+  ]
+}

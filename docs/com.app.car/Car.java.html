@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Car.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Cars</a> &gt; <a href="index.source.html" class="el_package">com.app.car</a> &gt; <span class="el_source">Car.java</span></div><h1>Car.java</h1><pre class="source lang-java linenums">package com.app.car;
+
+import com.app.color.Color;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+
+/**
+ * The type Car.
+ */
+<span class="fc" id="L15">@AllArgsConstructor</span>
+<span class="pc bpc" id="L16" title="34 of 48 branches missed.">@EqualsAndHashCode</span>
+<span class="fc" id="L17">@ToString</span>
+public class Car {
+    /**
+     * The Brand.
+     */
+    final String brand;
+    /**
+     * The Model.
+     */
+    final String model;
+    /**
+     * The Price.
+     */
+    final BigDecimal price;
+    /**
+     * The Speed.
+     */
+    final int speed;
+    /**
+     * The Color.
+     */
+    final Color color;
+    /**
+     * The Components.
+     */
+    final List&lt;String&gt; components;
+
+    /**
+     * Has speed between boolean.
+     *
+     * @param minSpeed the min speed
+     * @param maxSpeed the max speed
+     * @return the boolean
+     */
+    public boolean hasSpeedBetween(int minSpeed, int maxSpeed) {
+
+<span class="fc bfc" id="L53" title="All 4 branches covered.">        return (speed &gt;= minSpeed &amp;&amp; speed &lt;= maxSpeed);</span>
+    }
+
+    /**
+     * Car with sorted components car.
+     *
+     * @param comparator the comparator
+     * @return the car
+     */
+    public Car carWithSortedComponents(Comparator&lt;String&gt; comparator) {
+
+<span class="fc" id="L64">        var sortedComponents = components</span>
+<span class="fc" id="L65">                .stream()</span>
+<span class="fc" id="L66">                .sorted(comparator)</span>
+<span class="fc" id="L67">                .toList();</span>
+
+<span class="fc" id="L69">        return new Car(brand, model, price, speed, color, sortedComponents);</span>
+    }
+
+    /**
+     * Has component boolean.
+     *
+     * @param component the component
+     * @return the boolean
+     */
+    public boolean hasComponent(String component) {
+
+<span class="fc" id="L80">        return !components.stream().filter(component::matches)</span>
+<span class="fc" id="L81">                .toList()</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">                .isEmpty();</span>
+    }
+
+
+    /**
+     * Gets different between price.
+     *
+     * @param price the price
+     * @return the different between price
+     */
+    public BigDecimal getDifferentBetweenPrice(BigDecimal price) {
+
+<span class="fc" id="L94">        return this.price.subtract(price).abs();</span>
+    }
+
+    /**
+     * Has price between boolean.
+     *
+     * @param minPrice the min price
+     * @param maxPrice the max price
+     * @return the boolean
+     */
+    public boolean hasPriceBetween(BigDecimal minPrice, BigDecimal maxPrice) {
+
+<span class="fc bfc" id="L106" title="All 4 branches covered.">        return price.compareTo(minPrice) &gt;= 0 &amp;&amp; price.compareTo(maxPrice) &lt;= 0;</span>
+    }
+
+    /**
+     * Has brand pattern boolean.
+     *
+     * @param brand the brand
+     * @return the boolean
+     */
+    public boolean hasBrandPattern(String brand) {
+
+<span class="fc" id="L117">        return this.brand.matches(brand.toUpperCase());</span>
+    }
+
+    /**
+     * Has model pattern boolean.
+     *
+     * @param model the model
+     * @return the boolean
+     */
+    public boolean hasModelPattern(String model) {
+
+<span class="fc" id="L128">        return this.model.matches(model.toUpperCase());</span>
+    }
+
+    /**
+     * Has components boolean.
+     *
+     * @param components the components
+     * @return the boolean
+     */
+    public boolean hasComponents(List&lt;String&gt; components) {
+
+<span class="fc" id="L139">        return new HashSet&lt;&gt;(this.components).containsAll(components);</span>
+    }
+
+    /**
+     * Has car criterion boolean.
+     *
+     * @param carCriterion the car criterion
+     * @return the boolean
+     */
+    public boolean hasCarCriterion(CarCriterion carCriterion) {
+
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        return hasModelPattern(carCriterion.model) &amp;&amp;</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">                hasBrandPattern(carCriterion.brand) &amp;&amp;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">                hasSpeedBetween(carCriterion.minSpeed, carCriterion.maxSpeed) &amp;&amp;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">                hasPriceBetween(carCriterion.minPrice, carCriterion.maxPrice) &amp;&amp;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">                hasComponents(carCriterion.components);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
