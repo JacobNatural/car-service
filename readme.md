@@ -15,23 +15,24 @@ All components of the application are thoroughly tested using JUnit, achieving 8
 - Java Development Kit (JDK) 22
 - A Java IDE or text editor (e.g., IntelliJ IDEA, Eclipse, VSCode)
 
-### Installation
 
-1. Clone the repository:
+### Cloning the repository:
 
-    ```bash
-    git clone https://github.com/yourusername/car-processing-app.git
-    cd car-processing-app
-    ```
+```Bash
+git clone https://github.com/JacobNatural/Car_Service.git
+cd Car_Service
+```
+### Building the project using Maven:
 
-2. Open the project in your preferred Java IDE.
 
-## Usage
-
-### Running the Application
-
-1. Open [App.java](https://github.com/JacobNatural/Car_Service/blob/master/src/main/java/com/app/App.java)
-2. Execute its `main` method to launch the application and see example usages.
+```Bash
+mvn clean install
+```
+### Running the application:
+```Bash
+cd target  
+java java --enable-preview -jar cars-1.0.jar
+```
 
 ### Integrate into Your Project
 
@@ -39,6 +40,11 @@ All components of the application are thoroughly tested using JUnit, achieving 8
 2. Utilize the provided classes and methods to handle car data processing, validation, and statistics.
 
 ## Project Structure
+
+### Package: `com.app`
+
+- [App.java](https://github.com/JacobNatural/Car_Service/blob/master/src/main/java/com/app/App.java)
+    - Main class demonstrating usage of the application.
 
 ### Package: `com.app.car`
 
@@ -209,10 +215,7 @@ All components of the application are thoroughly tested using JUnit, achieving 8
     - Methods:
         - `public List<String> validate(Cars cars)`
 
-### Package: `com.app`
 
-- [App.java](https://github.com/JacobNatural/Car_Service/blob/master/src/main/java/com/app/App.java)
-    - Main class demonstrating usage of the application.
 
 ## Contributing
 

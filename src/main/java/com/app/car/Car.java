@@ -10,143 +10,140 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * The type Car.
+ * Represents a car with various attributes such as brand, model, price, speed, color, and components.
+ * Provides methods to query and manipulate these attributes.
  */
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 public class Car {
     /**
-     * The Brand.
+     * The brand of the car.
      */
     final String brand;
+
     /**
-     * The Model.
+     * The model of the car.
      */
     final String model;
+
     /**
-     * The Price.
+     * The price of the car.
      */
     final BigDecimal price;
+
     /**
-     * The Speed.
+     * The speed of the car.
      */
     final int speed;
+
     /**
-     * The Color.
+     * The color of the car.
      */
     final Color color;
+
     /**
-     * The Components.
+     * The list of components of the car.
      */
     final List<String> components;
 
     /**
-     * Has speed between boolean.
+     * Checks if the car's speed is within the specified range.
      *
-     * @param minSpeed the min speed
-     * @param maxSpeed the max speed
-     * @return the boolean
+     * @param minSpeed The minimum speed.
+     * @param maxSpeed The maximum speed.
+     * @return {@code true} if the car's speed is between {@code minSpeed} and {@code maxSpeed}, inclusive;
+     *         {@code false} otherwise.
      */
     public boolean hasSpeedBetween(int minSpeed, int maxSpeed) {
-
         return (speed >= minSpeed && speed <= maxSpeed);
     }
 
     /**
-     * Car with sorted components car.
+     * Returns a new {@link Car} object with components sorted according to the given comparator.
      *
-     * @param comparator the comparator
-     * @return the car
+     * @param comparator The comparator used to sort the components.
+     * @return A new {@link Car} instance with sorted components.
      */
     public Car carWithSortedComponents(Comparator<String> comparator) {
-
         var sortedComponents = components
                 .stream()
                 .sorted(comparator)
                 .toList();
-
         return new Car(brand, model, price, speed, color, sortedComponents);
     }
 
     /**
-     * Has component boolean.
+     * Checks if the car contains the specified component.
      *
-     * @param component the component
-     * @return the boolean
+     * @param component The component to check.
+     * @return {@code true} if the component is present in the car's list of components; {@code false} otherwise.
      */
     public boolean hasComponent(String component) {
-
         return !components.stream().filter(component::matches)
                 .toList()
                 .isEmpty();
     }
 
-
     /**
-     * Gets different between price.
+     * Calculates the absolute difference between the car's price and the given price.
      *
-     * @param price the price
-     * @return the different between price
+     * @param price The price to compare against.
+     * @return The absolute difference between the car's price and the given price.
      */
     public BigDecimal getDifferentBetweenPrice(BigDecimal price) {
-
         return this.price.subtract(price).abs();
     }
 
     /**
-     * Has price between boolean.
+     * Checks if the car's price is within the specified range.
      *
-     * @param minPrice the min price
-     * @param maxPrice the max price
-     * @return the boolean
+     * @param minPrice The minimum price.
+     * @param maxPrice The maximum price.
+     * @return {@code true} if the car's price is between {@code minPrice} and {@code maxPrice}, inclusive;
+     *         {@code false} otherwise.
      */
     public boolean hasPriceBetween(BigDecimal minPrice, BigDecimal maxPrice) {
-
         return price.compareTo(minPrice) >= 0 && price.compareTo(maxPrice) <= 0;
     }
 
     /**
-     * Has brand pattern boolean.
+     * Checks if the car's brand matches the specified pattern.
      *
-     * @param brand the brand
-     * @return the boolean
+     * @param brand The pattern to match against the car's brand.
+     * @return {@code true} if the car's brand matches the pattern; {@code false} otherwise.
      */
     public boolean hasBrandPattern(String brand) {
-
         return this.brand.matches(brand.toUpperCase());
     }
 
     /**
-     * Has model pattern boolean.
+     * Checks if the car's model matches the specified pattern.
      *
-     * @param model the model
-     * @return the boolean
+     * @param model The pattern to match against the car's model.
+     * @return {@code true} if the car's model matches the pattern; {@code false} otherwise.
      */
     public boolean hasModelPattern(String model) {
-
         return this.model.matches(model.toUpperCase());
     }
 
     /**
-     * Has components boolean.
+     * Checks if the car contains all the specified components.
      *
-     * @param components the components
-     * @return the boolean
+     * @param components The list of components to check.
+     * @return {@code true} if the car's list of components contains all the specified components; {@code false} otherwise.
      */
     public boolean hasComponents(List<String> components) {
-
         return new HashSet<>(this.components).containsAll(components);
     }
 
     /**
-     * Has car criterion boolean.
+     * Checks if the car meets the criteria defined by the {@link CarCriterion} object.
      *
-     * @param carCriterion the car criterion
-     * @return the boolean
+     * @param carCriterion The criteria to check against.
+     * @return {@code true} if the car meets all the criteria; {@code false} otherwise.
      */
     public boolean hasCarCriterion(CarCriterion carCriterion) {
-
         return hasModelPattern(carCriterion.model) &&
                 hasBrandPattern(carCriterion.brand) &&
                 hasSpeedBetween(carCriterion.minSpeed, carCriterion.maxSpeed) &&

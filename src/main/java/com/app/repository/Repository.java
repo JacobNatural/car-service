@@ -1,19 +1,21 @@
 package com.app.repository;
 
-import com.app.car.Car;
-
 import java.util.List;
 
 /**
- * The interface Repository.
+ * A generic interface for repositories that manage collections of entities.
+ * <p>
+ * This interface defines a method for retrieving all entities of type {@code T} managed by the repository.
+ * </p>
  *
- * @param <T> the type parameter
+ * @param <T> the type of entities managed by the repository
  */
 public interface Repository<T> {
+
     /**
-     * Gets all.
+     * Retrieves all entities managed by the repository.
      *
-     * @return the all
+     * @return a {@link List} containing all entities of type {@code T}
      */
     List<T> getAll();
 }

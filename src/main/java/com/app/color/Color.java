@@ -1,55 +1,43 @@
 package com.app.color;
 
 /**
- * The enum Color.
+ * An enumeration representing various colors.
+ * This enum provides a predefined set of color constants.
  */
 public enum Color {
-    /**
-     * White color.
-     */
+    /** The color white. */
     WHITE,
-    /**
-     * Gray color.
-     */
+
+    /** The color gray. */
     GRAY,
-    /**
-     * Black color.
-     */
+
+    /** The color black. */
     BLACK,
-    /**
-     * Silver color.
-     */
+
+    /** The color silver. */
     SILVER,
-    /**
-     * Blue color.
-     */
+
+    /** The color blue. */
     BLUE,
-    /**
-     * Red color.
-     */
+
+    /** The color red. */
     RED,
-    /**
-     * Green color.
-     */
+
+    /** The color green. */
     GREEN,
-    /**
-     * Brown color.
-     */
+
+    /** The color brown. */
     BROWN,
-    /**
-     * Orange color.
-     */
+
+    /** The color orange. */
     ORANGE,
-    /**
-     * Yellow color.
-     */
+
+    /** The color yellow. */
     YELLOW,
-    /**
-     * Gold color.
-     */
+
+    /** The color gold. */
     GOLD,
-    /**
-     * Purple color.
-     */
+
+    /** The color purple. */
     PURPLE
 }

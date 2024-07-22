@@ -1,16 +1,18 @@
 package com.app.json.serialiaze;
 
 /**
- * The interface Json serialize.
+ * Interface for serializing objects to JSON format.
  *
- * @param <T> the type parameter
+ * @param <T> the type of the object to be serialized
  */
-public interface JsonSerialize <T>{
+public interface JsonSerialize<T> {
+
     /**
-     * Serializer.
+     * Serializes the given data object to a JSON file.
      *
-     * @param data     the data
-     * @param filename the filename
+     * @param data     the object to be serialized
+     * @param filename the name of the file to write the JSON data to
+     * @throws IllegalArgumentException if the filename is null or empty
      */
     void serializer(T data, String filename);
 }

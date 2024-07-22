@@ -6,13 +6,15 @@ import com.app.json.serialiaze.JsonSerialize;
 import com.app.json.serialiaze.generic.AbstractJsonSerializer;
 
 /**
- * The type Car serializer.
+ * A concrete implementation of {@link AbstractJsonSerializer} for serializing {@link Car} objects to JSON.
+ * This class extends {@link AbstractJsonSerializer} and provides the specific type {@link Car} for serialization.
  */
 public class CarSerializer extends AbstractJsonSerializer<Car> implements JsonSerialize<Car> {
+
     /**
-     * Instantiates a new Car serializer.
+     * Constructs a new {@link CarSerializer} with the specified {@link JsonConverter}.
      *
-     * @param jsonConverter the json converter
+     * @param jsonConverter The {@link JsonConverter} used for converting {@link Car} objects to JSON.
      */
     public CarSerializer(JsonConverter<Car> jsonConverter) {
         super(jsonConverter);

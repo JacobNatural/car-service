@@ -9,21 +9,32 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collector;
 
 /**
- * The type Car min max collector.
+ * A {@link Collector} implementation that collects {@link Car} objects and computes statistical values (minimum and maximum)
+ * of a specified property of the cars.
+ *
+ * @param <T> The type of the property being collected (in this case, {@link BigDecimal}).
  */
-public class CarMinMaxCollector extends CollectorGeneric<Car,BigDecimal, Statistic<BigDecimal>> {
+public class CarMinMaxCollector extends CollectorGeneric<Car, BigDecimal, Statistic<BigDecimal>> {
 
     /**
-     * Instantiates a new Car min max collector.
+     * Constructs a new {@link CarMinMaxCollector}.
      *
-     * @param mapper the mapper
+     * @param mapper A function that extracts a {@link BigDecimal} property from a {@link Car} object.
      */
     public CarMinMaxCollector(Function<Car, BigDecimal> mapper) {
         super(mapper);
     }
 
+    /**
+     * Returns a {@link Function} that processes the list of {@link BigDecimal} values collected from the {@link Car} objects,
+     * and computes the minimum and maximum values, encapsulated in a {@link Statistic}.
+     *
+     * @return A {@link Function} that transforms a list of {@link BigDecimal} into a {@link Statistic} containing the minimum
+     *         and maximum values.
+     */
     @Override
     public Function<List<BigDecimal>, Statistic<BigDecimal>> finisher() {
 

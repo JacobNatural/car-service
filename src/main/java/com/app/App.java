@@ -1,7 +1,6 @@
 package com.app;
 
 import com.app.car.*;
-import com.app.color.Color;
 import com.app.json.converter.impl.GsonConverter;
 import com.app.json.deserialize.impl.CarsDeserializer;
 import com.app.model.Cars;
@@ -11,40 +10,59 @@ import com.app.validate.impl.CarsValidator;
 import com.google.gson.GsonBuilder;
 
 import java.math.BigDecimal;
-import java.nio.file.Paths;
-import java.util.AbstractMap;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * The main entry point of the application.
+ * <p>
+ * This class is responsible for setting up the application's environment and demonstrating the usage of various
+ * components involved in managing and analyzing car data. It initializes the necessary services, performs data
+ * deserialization, applies validation, and invokes methods of the car service to showcase its functionality.
+ * </p>
+ *
+ * <p>
+ * The class performs the following tasks:
+ * <ul>
+ *     <li>Initializes a JSON converter and deserializer for handling car data.</li>
+ *     <li>Sets up validators for car data and car criteria.</li>
+ *     <li>Configures a repository for accessing car data.</li>
+ *     <li>Initializes the car service to perform various operations on the car data.</li>
+ *     <li>Defines a car criterion for filtering cars.</li>
+ *     <li>Calls different methods of the car service and prints their results to the console.</li>
+ * </ul>
+ * </p>
+ *
+ * @see com.app.car.Car
+ * @see com.app.json.converter.impl.GsonConverter
+ * @see com.app.json.deserialize.impl.CarsDeserializer
+ * @see com.app.model.Cars
+ * @see com.app.repository.impl.CarsRepositoryImpl
+ * @see com.app.service.impl.CarServiceImpl
+ * @see com.app.validate.impl.CarsValidator
+ */
 public class App {
     public static void main(String[] args) {
 
-
-        var filename = "";
-        try {
-            filename = Paths.get(App.class.getResource("/carservice.json").toURI()).toString();
-        }catch (Exception e){
-            System.out.println(STR."Error: \{e.getMessage()}");
-        }
+        // FILENAME
+        var filename = "car_service.json";
 
         // DESERIALIZER
-
         var gson = new GsonBuilder().setPrettyPrinting().create();
         var carsConverter = new GsonConverter<Cars>(gson);
         var carsDeserializer = new CarsDeserializer(carsConverter);
 
         // VALIDATE
-
         var carValidator = new CarValidator("[A-Z0-9 ]+", 0);
         var carsValidator = new CarsValidator(carValidator);
 
         var carCriterionValidator = new CarCriterionValidator();
 
         // REPOSITORY
-
         var carsRepository = new CarsRepositoryImpl(filename, carsValidator,carsDeserializer );
 
         // CAR_SERVICE
+        var carService = new CarServiceImpl(carsRepository);
 
         // CAR_CRITERION
         var carCriterion = CarCriterion.of(
@@ -53,10 +71,7 @@ public class App {
                 BigDecimal.valueOf(150000), BigDecimal.valueOf(200000),
                 List.of("AIR CONDITION"), carCriterionValidator);
 
-        var carService = new CarServiceImpl(carsRepository);
-
         // BASIC METHOD OF CAR_SERVICE
-
         System.out.println("Method: 'sortedCarsBy'");
         System.out.println(carService.sortedCarsBy(Comparator.comparing(CarMapper.toSpeed)) + "\n");
 
