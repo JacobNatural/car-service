@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CollectorGeneric.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Cars</a> &gt; <a href="index.source.html" class="el_package">com.app.collectors.generic</a> &gt; <span class="el_source">CollectorGeneric.java</span></div><h1>CollectorGeneric.java</h1><pre class="source lang-java linenums">package com.app.collectors.generic;
+
+import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+
+/**
+ * A generic implementation of the {@link Collector} interface.
+ * This abstract class provides a basic implementation of a {@link Collector} that collects elements of type {@code T}
+ * into a list of type {@code U} and then produces a result of type {@code W}.
+ *
+ * @param &lt;T&gt; The type of input elements to the collector.
+ * @param &lt;U&gt; The type of elements in the intermediate list.
+ * @param &lt;W&gt; The type of the result produced by the collector.
+ */
+@RequiredArgsConstructor
+public abstract class CollectorGeneric&lt;T, U, W&gt; implements Collector&lt;T, List&lt;U&gt;, W&gt; {
+
+    /**
+     * A function that maps elements of type {@code T} to elements of type {@code U}.
+     */
+    private final Function&lt;T, U&gt; mapper;
+
+    /**
+     * Returns a {@link BiConsumer} that accumulates input elements into a list of type {@code U}.
+     * The list is created using the supplier and elements are added to it by applying the mapper function.
+     *
+     * @return A {@link BiConsumer} that accumulates input elements into a list.
+     */
+    @Override
+    public BiConsumer&lt;List&lt;U&gt;, T&gt; accumulator() {
+<span class="fc" id="L39">        return (cars, car) -&gt; cars.add(mapper.apply(car));</span>
+    }
+
+    /**
+     * Returns a {@link Supplier} that provides a new empty list of type {@code U}.
+     *
+     * @return A {@link Supplier} that provides a new empty list.
+     */
+    @Override
+    public Supplier&lt;List&lt;U&gt;&gt; supplier() {
+<span class="fc" id="L49">        return ArrayList::new;</span>
+    }
+
+    /**
+     * Returns a {@link BinaryOperator} that combines two lists of type {@code U} by adding all elements of the second
+     * list to the first list.
+     *
+     * @return A {@link BinaryOperator} that combines two lists.
+     */
+    @Override
+    public BinaryOperator&lt;List&lt;U&gt;&gt; combiner() {
+<span class="fc" id="L60">        return (l1, l2) -&gt; {</span>
+<span class="nc" id="L61">            l1.addAll(l2);</span>
+<span class="nc" id="L62">            return l1;</span>
+        };
+    }
+
+    /**
+     * Returns a set of characteristics that describe the behavior of the collector.
+     * This implementation returns a set containing {@link Characteristics#CONCURRENT}.
+     *
+     * @return A set of characteristics describing the behavior of the collector.
+     */
+    @Override
+    public Set&lt;Characteristics&gt; characteristics() {
+<span class="fc" id="L74">        return Set.of(Characteristics.CONCURRENT);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -14,7 +14,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lombok.version>1.18.32</lombok.version>
+        <lombok.version>1.18.34</lombok.version>
         <maven.enforce.plugin.version>3.3.0</maven.enforce.plugin.version>
         <maven.apache.maven.plugins.version>3.11.0</maven.apache.maven.plugins.version>
         <maven.assembly.plugin.version>3.6.0</maven.assembly.plugin.version>
@@ -24,6 +24,7 @@
         <mockito.junit.version>5.4.0</mockito.junit.version>
         <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
         <maven.jaococo.plugin.version>0.8.11</maven.jaococo.plugin.version>
+        <maven.javadoc.plugin.version>3.8.0</maven.javadoc.plugin.version>
     </properties>
 <dependencyManagement>
     <dependencies>
@@ -239,6 +240,18 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.version}</version>
+                <configuration>
+                    <sourcepath>src/main/java</sourcepath>
+                    <subpackages>com.app</subpackages>
+                    <additionalOptions>
+                        <option>--enable-preview</option>
+                    </additionalOptions>
+                </configuration>
+            </plugin>
         </plugins>
         </pluginManagement>
         <plugins>
@@ -257,6 +270,10 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
         </plugins>
         <resources>

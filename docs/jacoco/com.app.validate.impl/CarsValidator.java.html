@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarsValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Cars</a> &gt; <a href="index.source.html" class="el_package">com.app.validate.impl</a> &gt; <span class="el_source">CarsValidator.java</span></div><h1>CarsValidator.java</h1><pre class="source lang-java linenums">//package com.app.validate.impl;
+//
+//import com.app.car.Car;
+//import com.app.model.Cars;
+//import com.app.validate.Validator;
+//import lombok.RequiredArgsConstructor;
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//@RequiredArgsConstructor
+//public class CarsValidator implements Validator&lt;Cars&gt; {
+//
+//    private final Validator&lt;Car&gt; carValidator;
+//    @Override
+//    public List&lt;String&gt; validate(Cars cars) {
+//
+//        var errors = new ArrayList&lt;String&gt;();
+//
+//        if(cars == null){
+//            throw new IllegalArgumentException(&quot;Cars is null&quot;);
+//        }
+//
+//        if(cars.cars() == null){
+//            throw new IllegalArgumentException(&quot;List of cars is null&quot;);
+//        }
+//
+//        if(cars.cars().isEmpty()){
+//            throw new IllegalArgumentException(&quot;List of cars is empty&quot;);
+//        }
+//
+//        for(var car : cars.cars()){
+//
+//            var error = carValidator.validate(car);
+//
+//            if(!error.isEmpty()){
+//                errors.addAll(error);
+//            }
+//        }
+//        return errors;
+//    }
+//
+//}
+package com.app.validate.impl;
+
+import com.app.car.Car;
+import com.app.model.Cars;
+import com.app.validate.Validator;
+import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Validator implementation for validating a collection of cars.
+ * &lt;p&gt;
+ * This class validates a {@link Cars} object by ensuring that each individual car within the collection
+ * adheres to specific validation rules defined by a {@link Validator} for {@link Car}. It checks if the {@link Cars}
+ * object and its internal list of cars are non-null and non-empty, and delegates the actual car validation
+ * to the provided {@link Validator} instance.
+ * &lt;/p&gt;
+ *
+ * @see com.app.car.Car
+ * @see com.app.model.Cars
+ * @see com.app.validate.Validator
+ */
+@RequiredArgsConstructor
+public class CarsValidator implements Validator&lt;Cars&gt; {
+
+    private final Validator&lt;Car&gt; carValidator;
+
+    /**
+     * Validates the given {@link Cars} object.
+     * &lt;p&gt;
+     * The method performs the following checks:
+     * &lt;ul&gt;
+     *     &lt;li&gt;Ensures that the {@link Cars} object itself is not null.&lt;/li&gt;
+     *     &lt;li&gt;Ensures that the list of cars within the {@link Cars} object is not null or empty.&lt;/li&gt;
+     *     &lt;li&gt;Validates each individual {@link Car} object in the list using the provided {@link Validator}.&lt;/li&gt;
+     *     &lt;li&gt;Aggregates and returns all validation errors encountered during the process.&lt;/li&gt;
+     * &lt;/ul&gt;
+     * &lt;/p&gt;
+     *
+     * @param cars the {@link Cars} object to validate.
+     * @return a list of validation error messages. If there are no errors, the list will be empty.
+     * @throws IllegalArgumentException if the {@link Cars} object or its list of cars is null, or if the list is empty.
+     */
+    @Override
+    public List&lt;String&gt; validate(Cars cars) {
+
+<span class="fc" id="L89">        var errors = new ArrayList&lt;String&gt;();</span>
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (cars == null) {</span>
+<span class="fc" id="L92">            throw new IllegalArgumentException(&quot;Cars is null&quot;);</span>
+        }
+
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        if (cars.cars() == null) {</span>
+<span class="fc" id="L96">            throw new IllegalArgumentException(&quot;List of cars is null&quot;);</span>
+        }
+
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (cars.cars().isEmpty()) {</span>
+<span class="fc" id="L100">            throw new IllegalArgumentException(&quot;List of cars is empty&quot;);</span>
+        }
+
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        for (var car : cars.cars()) {</span>
+
+<span class="fc" id="L105">            var error = carValidator.validate(car);</span>
+
+<span class="fc bfc" id="L107" title="All 2 branches covered.">            if (!error.isEmpty()) {</span>
+<span class="fc" id="L108">                errors.addAll(error);</span>
+            }
+<span class="fc" id="L110">        }</span>
+<span class="fc" id="L111">        return errors;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

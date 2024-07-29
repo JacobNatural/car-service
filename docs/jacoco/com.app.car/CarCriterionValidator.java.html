@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarCriterionValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Cars</a> &gt; <a href="index.source.html" class="el_package">com.app.car</a> &gt; <span class="el_source">CarCriterionValidator.java</span></div><h1>CarCriterionValidator.java</h1><pre class="source lang-java linenums">package com.app.car;
+
+import com.app.validate.Validator;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Validator for {@link CarCriterion} objects.
+ * This class checks the validity of a {@link CarCriterion} instance based on several criteria, such as
+ * non-null and non-empty brand and model, valid speed and price ranges, and non-null and non-empty components list.
+ */
+<span class="fc" id="L14">public class CarCriterionValidator implements Validator&lt;CarCriterion&gt; {</span>
+
+    /**
+     * Validates the provided {@link CarCriterion} instance.
+     *
+     * @param carCriterion The {@link CarCriterion} instance to validate.
+     * @return A list of error messages. The list is empty if the instance is valid. Each error message provides
+     *         details about why the instance failed validation.
+     */
+    @Override
+    public List&lt;String&gt; validate(CarCriterion carCriterion) {
+
+<span class="fc" id="L26">        var errors = new ArrayList&lt;String&gt;();</span>
+
+        // Check if brand is null or empty
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">        if (carCriterion.brand == null) {</span>
+<span class="nc" id="L30">            errors.add(&quot;Brand is null&quot;);</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">        } else if (carCriterion.brand.isEmpty()) {</span>
+<span class="nc" id="L32">            errors.add(&quot;Brand is empty&quot;);</span>
+        }
+
+        // Check if model is null or empty
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if (carCriterion.model == null) {</span>
+<span class="nc" id="L37">            errors.add(&quot;Model is null&quot;);</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        } else if (carCriterion.model.isEmpty()) {</span>
+<span class="nc" id="L39">            errors.add(&quot;Model is empty&quot;);</span>
+        }
+
+        // Check if minSpeed is greater than maxSpeed
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">        if (carCriterion.minSpeed &gt; carCriterion.maxSpeed) {</span>
+<span class="nc" id="L44">            errors.add(&quot;Min speed greater than max speed&quot;);</span>
+        }
+
+        // Check if minSpeed is less than 0
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if (carCriterion.minSpeed &lt; 0) {</span>
+<span class="nc" id="L49">            errors.add(&quot;Min speed less than 0&quot;);</span>
+        }
+
+        // Check if minPrice and maxPrice are valid
+<span class="pc bpc" id="L53" title="2 of 4 branches missed.">        if (carCriterion.minPrice == null || carCriterion.maxPrice == null) {</span>
+<span class="nc" id="L54">            errors.add(&quot;Min price or max price is null&quot;);</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        } else if (carCriterion.minPrice.compareTo(carCriterion.maxPrice) &gt; 0) {</span>
+<span class="nc" id="L56">            errors.add(&quot;Min price is greater than max price&quot;);</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        } else if (carCriterion.minPrice.compareTo(BigDecimal.ZERO) &lt; 0) {</span>
+<span class="nc" id="L58">            errors.add(&quot;Min price is less than 0&quot;);</span>
+        }
+
+        // Check if components is null or empty
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (carCriterion.components == null) {</span>
+<span class="nc" id="L63">            errors.add(&quot;Components is null&quot;);</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        } else if (carCriterion.components.isEmpty()) {</span>
+<span class="nc" id="L65">            errors.add(&quot;Components is empty&quot;);</span>
+        }
+
+<span class="fc" id="L68">        return errors;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

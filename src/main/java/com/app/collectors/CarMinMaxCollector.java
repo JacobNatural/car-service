@@ -15,7 +15,7 @@ import java.util.stream.Collector;
  * A {@link Collector} implementation that collects {@link Car} objects and computes statistical values (minimum and maximum)
  * of a specified property of the cars.
  *
- * @param <T> The type of the property being collected (in this case, {@link BigDecimal}).
+ * The type of the property being collected (in this case, {@link BigDecimal}).
  */
 public class CarMinMaxCollector extends CollectorGeneric<Car, BigDecimal, Statistic<BigDecimal>> {
 

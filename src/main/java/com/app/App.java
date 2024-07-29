@@ -21,7 +21,7 @@ import java.util.List;
  * deserialization, applies validation, and invokes methods of the car service to showcase its functionality.
  * </p>
  *
- * <p>
+ *
  * The class performs the following tasks:
  * <ul>
  *     <li>Initializes a JSON converter and deserializer for handling car data.</li>
@@ -31,7 +31,7 @@ import java.util.List;
  *     <li>Defines a car criterion for filtering cars.</li>
  *     <li>Calls different methods of the car service and prints their results to the console.</li>
  * </ul>
- * </p>
+ *
  *
  * @see com.app.car.Car
  * @see com.app.json.converter.impl.GsonConverter

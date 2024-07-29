@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarsRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Cars</a> &gt; <a href="index.source.html" class="el_package">com.app.repository.impl</a> &gt; <span class="el_source">CarsRepositoryImpl.java</span></div><h1>CarsRepositoryImpl.java</h1><pre class="source lang-java linenums">package com.app.repository.impl;
+
+import com.app.car.Car;
+import com.app.repository.Repository;
+import com.app.json.deserialize.JsonDeserialize;
+import com.app.model.Cars;
+import com.app.validate.Validator;
+import java.util.List;
+
+/**
+ * Implementation of {@link Repository} for managing {@link Car} objects.
+ * &lt;p&gt;
+ * This class provides access to a collection of {@link Car} objects by loading them from a JSON file.
+ * The data is validated using a {@link Validator} before being stored.
+ * &lt;/p&gt;
+ */
+public class CarsRepositoryImpl implements Repository&lt;Car&gt; {
+
+    private final List&lt;Car&gt; cars;
+
+    /**
+     * Constructs a new {@link CarsRepositoryImpl} with the given parameters.
+     * &lt;p&gt;
+     * The constructor initializes the repository by deserializing {@link Cars} from the specified JSON file
+     * and validates the data using the provided {@link Validator}.
+     * &lt;/p&gt;
+     *
+     * @param filename       the path to the JSON file containing the car data
+     * @param validator      the {@link Validator} used to validate the deserialized {@link Cars}
+     * @param jsonDeserialize the {@link JsonDeserialize} implementation used for deserializing JSON data
+     * @throws IllegalArgumentException if the data is invalid according to the provided validator
+     */
+<span class="fc" id="L33">    public CarsRepositoryImpl(String filename, Validator&lt;Cars&gt; validator, JsonDeserialize&lt;Cars&gt; jsonDeserialize) {</span>
+
+<span class="fc" id="L35">        var cars = jsonDeserialize.deserialize(filename);</span>
+<span class="fc" id="L36">        Validator.validate(cars, validator);</span>
+
+<span class="fc" id="L38">        this.cars = cars.cars();</span>
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * Returns all {@link Car} objects managed by this repository.
+     *
+     * @return a {@link List} of {@link Car} objects
+     */
+    @Override
+    public List&lt;Car&gt; getAll() {
+<span class="fc" id="L48">        return cars;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

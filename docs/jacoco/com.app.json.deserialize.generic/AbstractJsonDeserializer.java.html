@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractJsonDeserializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Cars</a> &gt; <a href="index.source.html" class="el_package">com.app.json.deserialize.generic</a> &gt; <span class="el_source">AbstractJsonDeserializer.java</span></div><h1>AbstractJsonDeserializer.java</h1><pre class="source lang-java linenums">package com.app.json.deserialize.generic;
+
+import com.app.json.converter.JsonConverter;
+import com.app.json.deserialize.JsonDeserialize;
+import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+
+import java.io.FileReader;
+import java.lang.reflect.ParameterizedType;
+
+/**
+ * An abstract base class for deserializing JSON data into objects of type {@code T}.
+ * It uses a {@link JsonConverter} to perform the actual JSON-to-object conversion.
+ *
+ * @param &lt;T&gt; The type of object to be deserialized from JSON.
+ */
+@AllArgsConstructor
+public abstract class AbstractJsonDeserializer&lt;T&gt; implements JsonDeserialize&lt;T&gt; {
+
+    private final JsonConverter&lt;T&gt; jsonConverter;
+
+    /**
+     * The class type of the object to be deserialized.
+     * This is determined using reflection to extract the generic type parameter {@code T}.
+     */
+    private final Class&lt;T&gt; tClass =
+            (Class&lt;T&gt;) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+
+    /**
+     * Deserializes JSON data from a file into an object of type {@code T}.
+     *
+     * @param filename The name of the file containing the JSON data.
+     * @return An object of type {@code T} created from the JSON data.
+     * @throws IllegalArgumentException If the {@code filename} is {@code null} or empty.
+     * @throws RuntimeException If an I/O error occurs while reading the file.
+     */
+    @Override
+<span class="fc" id="L38">    @SneakyThrows</span>
+    public T deserialize(String filename) {
+
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (filename == null) {</span>
+<span class="fc" id="L42">            throw new IllegalArgumentException(&quot;Filename is null&quot;);</span>
+        }
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (filename.isEmpty()) {</span>
+<span class="fc" id="L45">            throw new IllegalArgumentException(&quot;Filename is empty&quot;);</span>
+        }
+
+<span class="fc" id="L48">        try (var fileReader = new FileReader(filename)) {</span>
+<span class="fc" id="L49">            return jsonConverter.fromJson(fileReader, tClass);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
