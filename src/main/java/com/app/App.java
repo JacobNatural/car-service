@@ -73,10 +73,12 @@ public class App {
 
         // BASIC METHOD OF CAR_SERVICE
         System.out.println("Method: 'sortedCarsBy'");
-        System.out.println(carService.sortedCarsBy(Comparator.comparing(CarMapper.toSpeed)) + "\n");
+        carService.sortedCarsBy(Comparator.comparing(CarMapper.toSpeed)).forEach(System.out::println);
+        System.out.println();
 
         System.out.println("Method: 'getCarsWithSpeedInterval'");
-        System.out.println(carService.getCarsWithSpeedInterval(180,300) + "\n");
+        carService.getCarsWithSpeedInterval(180,300).forEach(System.out::println);
+        System.out.println();
 
         System.out.println("Method: 'groupByColorAndAmountOfCars'");
         System.out.println(carService.groupByColorAndAmountOfCars() + "\n");
@@ -88,10 +90,17 @@ public class App {
         System.out.println(carService.priceSpeedStatistic()+ "\n");
 
         System.out.println("Method: 'getCarsWithSortedComponents'");
-        System.out.println(carService.getCarsWithSortedComponents(Comparator.naturalOrder())+ "\n");
+        carService.getCarsWithSortedComponents(Comparator.naturalOrder()).forEach(System.out::println);
+        System.out.println();
+
 
         System.out.println("Method: 'groupByComponentsAndCarsSortedByAmountOfComponents'");
-        System.out.println(carService.groupByComponentsAndCarsSortedByAmountOfComponents(Comparator.naturalOrder())+ "\n");
+        carService.groupByComponentsAndCarsSortedByAmountOfComponents(Comparator.naturalOrder()).entrySet()
+                        .forEach(map -> {
+                            System.out.println(map.getKey());
+                            System.out.println(map.getValue());
+                        });
+        System.out.println();
 
         System.out.println("Method: 'getCarsCloseToPrice'");
         System.out.println(carService.getCarsCloseToPrice(BigDecimal.valueOf(150))+ "\n");

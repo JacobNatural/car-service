@@ -3,6 +3,7 @@ package com.app.car;
 import com.app.validate.Validator;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.ToString;
 
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ import java.util.List;
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
+@Builder
 public class CarCriterion {
     /**
      * The brand of the car to filter by.

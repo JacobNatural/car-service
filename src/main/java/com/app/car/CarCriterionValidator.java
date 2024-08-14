@@ -41,7 +41,7 @@ public class CarCriterionValidator implements Validator<CarCriterion> {
 
         // Check if minSpeed is greater than maxSpeed
         if (carCriterion.minSpeed > carCriterion.maxSpeed) {
-            errors.add("Min speed greater than max speed");
+            errors.add("Minimum speed is greater than maximum speed");
         }
 
         // Check if minSpeed is less than 0
@@ -51,9 +51,9 @@ public class CarCriterionValidator implements Validator<CarCriterion> {
 
         // Check if minPrice and maxPrice are valid
         if (carCriterion.minPrice == null || carCriterion.maxPrice == null) {
-            errors.add("Min price or max price is null");
+            errors.add("The minimum price or the maximum price is null");
         } else if (carCriterion.minPrice.compareTo(carCriterion.maxPrice) > 0) {
-            errors.add("Min price is greater than max price");
+            errors.add("Minimum price is greater than maximum price");
         } else if (carCriterion.minPrice.compareTo(BigDecimal.ZERO) < 0) {
             errors.add("Min price is less than 0");
         }
