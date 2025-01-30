@@ -1,290 +1,380 @@
 package com.app.service.impl;
 
-import com.app.car.Car;
-import com.app.car.CarMapper;
-import com.app.collectors.CarStatisticCollector;
-import com.app.collectors.CarMinMaxCollector;
-import com.app.color.Color;
-import com.app.car.CarCriterion;
-import com.app.repository.Repository;
+import com.app.controller.dto.car.*;
+import com.app.controller.dto.components.ComponentsWithCarsDto;
+import com.app.persistence.*;
+import com.app.persistence.entity.ComponentEntity;
+import com.app.persistence.entity.CarEntity;
+import com.app.persistence.impl.CarSpecificationImpl;
+import com.app.persistence.view.*;
 import com.app.service.CarService;
-import com.app.statistic.Statistic;
-import lombok.ToString;
+import com.app.service.impl.generic.CrudServiceGeneric;
+import com.app.validate.Validator;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
 /**
- * Implementation of the {@link CarService} interface for managing and processing car data.
+ * The CarServiceImpl class implements the CarService interface and provides
+ * functionality for managing car-related operations such as saving, filtering,
+ * grouping, and sorting cars.
  * <p>
- * This service provides various methods to query, sort, and process collections of {@link Car} objects.
+ * This class interacts with the CarRepository and ComponentRepository to
+ * perform CRUD operations on car entities and components. It also supports
+ * various advanced operations like grouping cars, getting statistics, and filtering
+ * by different criteria such as speed, price, and components.
  * </p>
  */
-@ToString
-public class CarServiceImpl implements CarService {
+@Service
+@Transactional
+public class CarServiceImpl extends CrudServiceGeneric<CarEntity, Long> implements CarService {
 
-    private final Repository<Car> carRepository;
+    private final CarRepository carRepository;
+    private final ComponentRepository componentRepository;
+    private final CarSpecificationImpl carSpecificationImpl;
+    private final Validator<CreateCarDto> validator;
+    private final Validator<String> parametersValidator;
 
     /**
-     * Constructs a new {@link CarServiceImpl} with the specified car repository.
+     * Constructor for CarServiceImpl.
      *
-     * @param repository the repository to retrieve car data from
+     * @param carRepository        the repository for car entities.
+     * @param componentRepository  the repository for component entities.
+     * @param carSpecificationImpl the specification implementation for car filtering.
+     * @param validator            the validator for CreateCarDto objects.
+     * @param parametersValidator  the validator for sorting parameters.
      */
-    public CarServiceImpl(Repository<Car> repository) {
-        this.carRepository = repository;
+    public CarServiceImpl(
+            CarRepository carRepository,
+            ComponentRepository componentRepository,
+            CarSpecificationImpl carSpecificationImpl,
+            Validator<CreateCarDto> validator,
+            Validator<String> parametersValidator) {
+        super(carRepository);
+        this.carRepository = carRepository;
+        this.componentRepository = componentRepository;
+        this.carSpecificationImpl = carSpecificationImpl;
+        this.validator = validator;
+        this.parametersValidator = parametersValidator;
     }
 
     /**
-     * Returns a list of cars sorted by the specified comparator.
+     * Saves a new car entity based on the provided data transfer object (DTO).
      *
-     * @param comparator the comparator to use for sorting
-     * @return a list of cars sorted by the comparator
-     * @throws IllegalArgumentException if the comparator is {@code null}
+     * @param createCarDto the data transfer object containing car information.
+     * @return the ID of the newly saved car.
+     * @throws EntityNotFoundException if any of the components in the DTO are not found.
      */
-    public List<Car> sortedCarsBy(Comparator<Car> comparator) {
-        if (comparator == null) {
-            throw new IllegalArgumentException("Comparator is null");
+    @Override
+    public Long save(CreateCarDto createCarDto) {
+        validator.validate(createCarDto);
+        var components = componentRepository.findAllById(createCarDto.components());
+
+        if (components.size() != createCarDto.components().size()) {
+            throw new EntityNotFoundException("Not all components were found");
         }
+
         return carRepository
-                .getAll()
+                .save(createCarDto
+                        .toCarEntity()
+                        .withComponents(components))
+                .getId();
+    }
+
+    /**
+     * Saves a list of car entities based on the provided list of DTOs.
+     *
+     * @param cars the list of data transfer objects representing cars.
+     * @return a list of IDs of the newly saved cars.
+     * @throws EntityNotFoundException if any of the components in the DTOs are not found.
+     */
+    @Override
+    public List<Long> saveAll(List<CreateCarDto> cars) {
+        var componentsIds = cars
                 .stream()
+                .peek(validator::validate)
+                .map(CreateCarDto::components)
+                .flatMap(Collection::stream)
+                .distinct()
+                .toList();
+
+        var components = componentRepository
+                .findAllById(componentsIds)
+                .stream()
+                .collect(Collectors
+                        .toMap(
+                                ComponentEntity::getId,
+                                Function.identity()));
+
+        if (componentsIds.size() != components.size()) {
+            throw new EntityNotFoundException("Not all components were found");
+        }
+
+        var carsToSave = cars
+                .stream()
+                .map(createCarDto -> {
+                    var componentsEntity = createCarDto
+                            .components()
+                            .stream()
+                            .map(components::get)
+                            .toList();
+                    return createCarDto.toCarEntity().withComponents(componentsEntity);
+                })
+                .toList();
+
+        return carRepository.saveAll(carsToSave)
+                .stream()
+                .map(CarEntity::getId)
+                .toList();
+    }
+
+    /**
+     * Returns a list of cars sorted by specified parameters and order direction.
+     *
+     * @param parameters a list of parameters to sort the cars by.
+     * @param direction  the direction of sorting, either "asc" for ascending or "desc" for descending.
+     * @return a list of sorted car DTOs.
+     * @throws IllegalArgumentException if parameters or direction are invalid.
+     */
+    @Override
+    public List<CarDto> sortedCarsBy(List<String> parameters, String direction) {
+        // Validate input and prepare sorting logic
+        if (parameters == null) {
+            throw new IllegalArgumentException("Parameters cannot be null");
+        }
+
+        if (parameters.isEmpty()) {
+            throw new IllegalArgumentException("Parameters cannot be empty");
+        }
+
+        if (direction == null) {
+            throw new IllegalArgumentException("Direction cannot be null");
+        }
+
+        if (!direction.equalsIgnoreCase("asc") && !direction.equalsIgnoreCase("desc")) {
+            throw new IllegalArgumentException("Direction must be 'asc' or 'desc'.");
+        }
+
+        var direct = Sort.Direction.fromString(direction);
+        var sortBy = Sort.unsorted();
+
+        for (var param : parameters) {
+            parametersValidator.validate(param);
+            sortBy = sortBy.and(Sort.by(direct, param));
+        }
+
+        return carRepository
+                .findAll(sortBy)
+                .stream()
+                .map(CarEntity::toCarDto)
+                .toList();
+    }
+
+    /**
+     * Returns a list of cars filtered by a given speed interval.
+     *
+     * @param minSpeed the minimum speed.
+     * @param maxSpeed the maximum speed.
+     * @return a list of car DTOs matching the speed interval.
+     * @throws IllegalArgumentException if speed values are invalid.
+     */
+    @Override
+    public List<CarDto> getCarsWithSpeedInterval(int minSpeed, int maxSpeed) {
+        if (minSpeed < 0) {
+            throw new IllegalArgumentException("Min speed cannot be negative");
+        }
+        if (minSpeed > maxSpeed) {
+            throw new IllegalArgumentException("Min speed cannot be greater than max speed");
+        }
+
+        return carRepository.findCarEntitiesBySpeedBetween(minSpeed, maxSpeed)
+                .stream()
+                .map(CarEntity::toCarDto)
+                .toList();
+    }
+
+    /**
+     * Returns a list of cars filtered by the provided criteria.
+     *
+     * @param carCriterionDto the filtering criteria.
+     * @return a list of car DTOs matching the criteria.
+     * @throws IllegalArgumentException if the criteria is invalid.
+     */
+    public List<CarDto> getCarsFilterBy(CarCriterionDto carCriterionDto) {
+        if (carCriterionDto == null) {
+            throw new IllegalArgumentException("Criterion cannot be null");
+        }
+
+        return carRepository.findAll(carSpecificationImpl.dynamicFilters(carCriterionDto.toFilteringView()))
+                .stream()
+                .map(CarEntity::toCarDto)
+                .toList();
+    }
+
+    /**
+     * Groups cars by a specific field and returns the result as DTOs.
+     *
+     * @param map the field to group by.
+     * @return a list of grouped car DTOs.
+     */
+    @Override
+    public List<GroupByDto<Object>> groupByAndAmountOfCars(String map) {
+        parametersValidator.validate(map);
+
+        return carRepository.groupByField(map)
+                .stream()
+                .map(GroupByView::toGroupByDto)
+                .toList();
+    }
+
+    /**
+     * Groups cars by a specific field and returns statistics such as min and max price.
+     *
+     * @param map the field to group by.
+     * @return a list of grouped car statistics DTOs.
+     */
+    @Override
+    public List<GroupByAndPriceStatisticDto<Object>> groupByAndMinMaxPriceStatistic(String map) {
+        parametersValidator.validate(map);
+
+        return carRepository.groupByAndPriceStatisticField(map)
+                .stream()
+                .map(GroupByAndPriceStatisticView::toGroupByAndPriceStatisticDto)
+                .toList();
+    }
+
+    /**
+     * Returns price and speed statistics for cars.
+     *
+     * @return the price and speed statistics DTO.
+     * @throws EntityNotFoundException if no statistics are found.
+     */
+    @Override
+    public PriceSpeedStatisticDto priceSpeedStatistic() {
+        return carRepository
+                .findPriceSpeedStatistics()
+                .orElseThrow(() -> new EntityNotFoundException("Not found price and speed statistic"))
+                .toPriceSpeedStatisticDto();
+    }
+
+    /**
+     * Returns a list of cars sorted by their components.
+     *
+     * @param order the sorting order, either "asc" or "desc".
+     * @return a list of car DTOs with sorted components.
+     */
+    @Override
+    public List<CarDto> getCarsWithSortedComponents(String order) {
+        if (order == null) {
+            throw new IllegalArgumentException("Order cannot be null");
+        }
+
+        Comparator<String> comparator = getComparator(
+                order,
+                (v1, v2) -> v1.compareTo(v2),
+                (v1, v2) -> v2.compareTo(v1)
+        );
+
+        return carRepository
+                .findAll()
+                .stream()
+                .map(carEntity ->
+                        new CarDto(
+                                carEntity.getId(), carEntity.getBrand(),
+                                carEntity.getModel(), carEntity.getSpeed(),
+                                carEntity.getPrice(), carEntity.getColor(),
+                                carEntity
+                                        .getComponents()
+                                        .stream()
+                                        .map(ComponentEntity::getName)
+                                        .sorted(comparator)
+                                        .toList())
+                )
+                .toList();
+    }
+
+    /**
+     * Groups components and their associated cars, sorted by the number of cars.
+     *
+     * @param order the sorting order, either "asc" or "desc".
+     * @return a list of grouped components with associated cars.
+     */
+    @Override
+    public List<ComponentsWithCarsDto> groupByComponentsAndCarsSortedByAmountOfCars(String order) {
+        if (order == null) {
+            throw new IllegalArgumentException("Order cannot be null");
+        }
+
+        var comparator = getComparator(
+                order,
+                Comparator.comparingInt((ComponentsWithCarsDto v) -> v.carDto().size()),
+                (v1, v2) -> Integer.compare(v2.carDto().size(), v1.carDto().size()));
+
+        return componentRepository
+                .groupByComponent()
+                .stream()
+                .collect(Collectors.toMap(
+                        ComponentsAndCarsView::name,
+                        element ->
+                                new ArrayList<>(List.of(new CarWithoutComponentsDto(
+                                        element.id(), element.brand(),
+                                        element.model(), element.speed(),
+                                        element.price(), element.color()))),
+                        (v1, v2) -> {
+                            v1.addAll(v2);
+                            return v1;
+                        }))
+                .entrySet()
+                .stream()
+                .map(map -> new ComponentsWithCarsDto(map.getKey(), map.getValue()))
                 .sorted(comparator)
                 .toList();
     }
 
     /**
-     * Returns a list of cars with speed within the specified interval.
+     * Returns a list of cars that are close to a given price.
      *
-     * @param minSpeed the minimum speed
-     * @param maxSpeed the maximum speed
-     * @return a list of cars with speed within the interval
-     * @throws IllegalArgumentException if {@code minSpeed} is greater than {@code maxSpeed}
+     * @param price the target price.
+     * @return a list of car DTOs close to the target price.
+     * @throws IllegalArgumentException if the price is invalid.
      */
-    public List<Car> getCarsWithSpeedInterval(int minSpeed, int maxSpeed) {
-        if (minSpeed > maxSpeed) {
-            throw new IllegalArgumentException("Min speed is greater than max speed");
-        }
-        return getCarsFilterBy(car -> car.hasSpeedBetween(minSpeed, maxSpeed));
-    }
-
-    /**
-     * Returns a list of cars filtered by the specified predicate.
-     *
-     * @param filter the predicate to use for filtering
-     * @return a list of cars that match the predicate
-     * @throws IllegalArgumentException if the filter is {@code null}
-     */
-    public List<Car> getCarsFilterBy(Predicate<Car> filter) {
-        if (filter == null) {
-            throw new IllegalArgumentException("Filter is null");
-        }
-        return carRepository
-                .getAll()
-                .stream()
-                .filter(filter)
-                .toList();
-    }
-
-    /**
-     * Groups cars by color and counts the number of cars for each color.
-     *
-     * @return a map of colors to the number of cars for each color
-     */
-    public Map<Color, Long> groupByColorAndAmountOfCars() {
-        return groupByAndAmountOfCars(CarMapper.toColor);
-    }
-
-    /**
-     * Groups cars by a specified property and counts the number of cars for each property value.
-     *
-     * @param carMapper a function to map cars to the property to group by
-     * @param <T> the type of the property value
-     * @return a map of property values to the number of cars for each value
-     * @throws IllegalArgumentException if the carMapper is {@code null}
-     */
-    public <T> Map<T, Long> groupByAndAmountOfCars(Function<Car, T> carMapper) {
-        if (carMapper == null) {
-            throw new IllegalArgumentException("Car mapper is null");
-        }
-        return carRepository
-                .getAll()
-                .stream()
-                .collect(Collectors.groupingBy(carMapper, Collectors.counting()));
-    }
-
-    /**
-     * Groups cars by brand and calculates the minimum and maximum price for each brand.
-     *
-     * @return a map of brand names to statistics of minimum and maximum prices
-     */
-    public Map<String, Statistic<BigDecimal>> groupByBrandAndMinMaxPriceStatistic() {
-        return groupByAndMinMaxPriceStatistic(
-                CarMapper.toBrand,
-                new CarMinMaxCollector(CarMapper.toPrice));
-    }
-
-    /**
-     * Groups cars by a specified property and calculates statistics (e.g., min, max, average) for a specified value.
-     *
-     * @param carMapper a function to map cars to the property to group by
-     * @param collectors a collector to calculate the statistics
-     * @param <T> the type of the property value
-     * @param <U> the type of the intermediate result of the collector
-     * @param <W> the type of the statistics result
-     * @return a map of property values to statistics
-     * @throws IllegalArgumentException if the carMapper or collectors are {@code null}
-     */
-    public <T, U, W> Map<T, Statistic<W>> groupByAndMinMaxPriceStatistic(
-            Function<Car, T> carMapper, Collector<Car, U, Statistic<W>> collectors) {
-
-        if (carMapper == null) {
-            throw new IllegalArgumentException("Car mapper is null");
-        }
-
-        if (collectors == null) {
-            throw new IllegalArgumentException("Collector is null");
-        }
-
-        return carRepository
-                .getAll()
-                .stream()
-                .collect(Collectors.groupingBy(carMapper, collectors));
-    }
-
-    /**
-     * Returns a list of statistics for price and speed.
-     *
-     * @return a list containing statistics for price and speed
-     */
-    public List<Statistic<BigDecimal>> priceSpeedStatistic() {
-        return List.of(
-                getStatistic(new CarStatisticCollector(CarMapper.toPrice)),
-                getStatistic(new CarStatisticCollector(CarMapper.toSpeed)));
-    }
-
-    /**
-     * Calculates statistics using the specified collector.
-     *
-     * @param collector the collector to use for calculating statistics
-     * @param <T> the type of the intermediate result of the collector
-     * @param <W> the type of the statistics result
-     * @return the calculated statistics
-     * @throws IllegalArgumentException if the collector is {@code null}
-     */
-    public <T, W> Statistic<W> getStatistic(Collector<Car, T, Statistic<W>> collector) {
-
-        if (collector == null) {
-            throw new IllegalArgumentException("Collector is null");
-        }
-
-        return carRepository
-                .getAll()
-                .stream()
-                .collect(collector);
-    }
-
-    /**
-     * Returns a list of cars with their components sorted by the specified comparator.
-     *
-     * @param comparator the comparator to use for sorting components
-     * @return a list of cars with sorted components
-     * @throws IllegalArgumentException if the comparator is {@code null}
-     */
-    public List<Car> getCarsWithSortedComponents(Comparator<String> comparator) {
-
-        if (comparator == null) {
-            throw new IllegalArgumentException("Comparator is null");
-        }
-
-        return carRepository
-                .getAll()
-                .stream()
-                .map(car -> car.carWithSortedComponents(comparator))
-                .toList();
-    }
-
-    /**
-     * Groups cars by their components and sorts the groups by the number of cars in each group.
-     *
-     * @param comparator the comparator to use for sorting groups by the number of cars
-     * @return a map of component names to lists of cars, sorted by the number of cars in each group
-     * @throws IllegalArgumentException if the comparator is {@code null}
-     */
-    public Map<String, List<Car>> groupByComponentsAndCarsSortedByAmountOfComponents(Comparator<Integer> comparator) {
-
-        if (comparator == null) {
-            throw new IllegalArgumentException("Comparator is null");
-        }
-
-        return carRepository.getAll()
-                .stream()
-                .flatMap(
-                        car -> CarMapper.toComponents.apply(car).stream()
-                                .map(m -> new AbstractMap.SimpleEntry<>(m, car)))
-                .collect(Collectors.toMap(
-                        AbstractMap.SimpleEntry::getKey,
-                        abs -> new ArrayList<>(List.of(abs.getValue())),
-                        (v1, v2) -> {
-                            v1.addAll(v2);
-                            return v1;
-                        },
-                        LinkedHashMap::new))
-                .entrySet()
-                .stream()
-                .sorted((m1, m2) -> comparator.compare(m1.getValue().size(), m2.getValue().size()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                        (v1, v2) -> v1, LinkedHashMap::new));
-    }
-
-    /**
-     * Returns a list of cars whose price is closest to the specified price.
-     *
-     * @param price the price to compare against
-     * @return a list of cars closest to the specified price
-     * @throws IllegalArgumentException if the price is {@code null} or less than or equal to zero
-     */
-    public List<Car> getCarsCloseToPrice(BigDecimal price) {
-
+    @Override
+    public List<CarDto> getCarsCloseToPrice(BigDecimal price) {
         if (price == null) {
-            throw new IllegalArgumentException("Price is null");
+            throw new IllegalArgumentException("Price cannot be null");
         }
 
         if (price.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Price is lower than zero");
+            throw new IllegalArgumentException("Price cannot be negative");
         }
 
         return carRepository
-                .getAll()
+                .findCarsCloseToPrice(price)
                 .stream()
-                .collect(Collectors.groupingBy(
-                        car -> car.getDifferentBetweenPrice(price), Collectors.toList())
-                )
-                .entrySet()
-                .stream()
-                .min(Map.Entry.comparingByKey())
-                .orElseThrow()
-                .getValue();
+                .map(CarEntity::toCarDto)
+                .toList();
     }
 
     /**
-     * Returns a list of cars that meet the specified criterion.
+     * Helper method to get a comparator based on the order.
      *
-     * @param carCriterion the criterion to filter cars by
-     * @return a list of cars that meet the criterion
-     * @throws IllegalArgumentException if the carCriterion is {@code null}
+     * @param order   the order (either "asc" or "desc").
+     * @param natural the comparator for ascending order.
+     * @param reverse the comparator for descending order.
+     * @param <T>     the type of the objects being compared.
+     * @return the comparator based on the order.
      */
-    public List<Car> getCarsWithCriterion(CarCriterion carCriterion) {
-        if (carCriterion == null) {
-            throw new IllegalArgumentException("Car criterion is null");
-        }
-
-        return carRepository
-                .getAll()
-                .stream()
-                .filter(car -> car.hasCarCriterion(carCriterion))
-                .toList();
+    private <T> Comparator<T> getComparator(String order, Comparator<T> natural, Comparator<T> reverse) {
+        return switch (order) {
+            case "asc" -> natural;
+            case "desc" -> reverse;
+            default -> throw new IllegalArgumentException("Invalid order: " + order);
+        };
     }
 }

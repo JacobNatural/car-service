@@ -1,0 +1,34 @@
+services:
+  mysql-car:
+    image: mysql:latest
+    volumes:
+      - mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_2
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+      MYSQL_TCP_PORT: 3305
+    ports:
+      - '3305:3305'
+    networks:
+      - car-service-network
+
+  webapp:
+    image: jakubmarjankowski/car-service:1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '8080:8080'
+    networks:
+      - car-service-network
+
+
+
+volumes:
+  mysql:
+
+networks:
+  car-service-network:

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComponentServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.service.impl</a> &gt; <span class="el_source">ComponentServiceImpl.java</span></div><h1>ComponentServiceImpl.java</h1><pre class="source lang-java linenums">package com.app.service.impl;
+
+import com.app.controller.dto.components.CreateComponentDto;
+import com.app.persistence.ComponentRepository;
+import com.app.persistence.CrudRepository;
+import com.app.persistence.entity.ComponentEntity;
+import com.app.service.ComponentService;
+import com.app.service.impl.generic.CrudServiceGeneric;
+import com.app.validate.CreateComponentDtoValidator;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * The ComponentServiceImpl class implements the ComponentService interface and provides
+ * functionality for managing car components. This includes saving individual components
+ * and saving multiple components at once.
+ * &lt;p&gt;
+ * The class interacts with the ComponentRepository to perform CRUD operations on
+ * component entities. It also uses a validator to ensure that the data for each
+ * component is valid before it is persisted in the database.
+ * &lt;/p&gt;
+ */
+@Service
+@Transactional
+public class ComponentServiceImpl extends CrudServiceGeneric&lt;ComponentEntity, Long&gt; implements ComponentService {
+
+    private final ComponentRepository componentRepository;
+    private final CreateComponentDtoValidator createComponentDtoValidator;
+
+    /**
+     * Constructor for ComponentServiceImpl.
+     *
+     * @param crudRepository            the repository for generic CRUD operations.
+     * @param componentRepository       the repository for component entities.
+     * @param createComponentDtoValidator the validator for CreateComponentDto objects.
+     */
+    public ComponentServiceImpl(
+            CrudRepository&lt;ComponentEntity, Long&gt; crudRepository,
+            ComponentRepository componentRepository,
+            CreateComponentDtoValidator createComponentDtoValidator
+    ) {
+<span class="fc" id="L44">        super(crudRepository);</span>
+<span class="fc" id="L45">        this.componentRepository = componentRepository;</span>
+<span class="fc" id="L46">        this.createComponentDtoValidator = createComponentDtoValidator;</span>
+<span class="fc" id="L47">    }</span>
+
+    /**
+     * Saves a new component entity based on the provided data transfer object (DTO).
+     *
+     * @param createComponentDto the data transfer object containing component information.
+     * @return the ID of the newly saved component.
+     * @throws IllegalArgumentException if the DTO is invalid.
+     */
+    @Override
+    public Long save(CreateComponentDto createComponentDto) {
+<span class="fc" id="L58">        createComponentDtoValidator.validate(createComponentDto);</span>
+<span class="fc" id="L59">        return componentRepository</span>
+<span class="fc" id="L60">                .save(createComponentDto.toCarComponentEntity())</span>
+<span class="fc" id="L61">                .getId();</span>
+    }
+
+    /**
+     * Saves a list of component entities based on the provided list of data transfer objects (DTOs).
+     *
+     * @param createComponentDtos the list of data transfer objects representing components.
+     * @return a list of IDs of the newly saved components.
+     * @throws IllegalArgumentException if any of the DTOs are invalid.
+     */
+    @Override
+    public List&lt;Long&gt; saveAll(List&lt;CreateComponentDto&gt; createComponentDtos) {
+<span class="fc" id="L73">        return componentRepository</span>
+<span class="fc" id="L74">                .saveAll(createComponentDtos.stream()</span>
+<span class="fc" id="L75">                        .peek(createComponentDtoValidator::validate)</span>
+<span class="fc" id="L76">                        .map(CreateComponentDto::toCarComponentEntity)</span>
+<span class="fc" id="L77">                        .toList())</span>
+<span class="fc" id="L78">                .stream()</span>
+<span class="fc" id="L79">                .map(ComponentEntity::getId)</span>
+<span class="fc" id="L80">                .toList();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

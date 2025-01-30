@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarCriterionDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.controller.dto.car</a> &gt; <span class="el_source">CarCriterionDto.java</span></div><h1>CarCriterionDto.java</h1><pre class="source lang-java linenums">package com.app.controller.dto.car;
+
+import com.app.color.Color;
+import com.app.persistence.view.CarCriterionFilteringView;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+/**
+ * Represents a DTO (Data Transfer Object) that holds car filtering criteria.
+ * This class includes information such as brand, model, speed range, price range, color, and components.
+ * It is used for filtering cars based on various search parameters.
+ */
+<span class="fc" id="L14">public record CarCriterionDto(</span>
+        String brand, // The brand of the car
+        String model, // The model of the car
+        Integer minSpeed, // The minimum speed of the car
+        Integer maxSpeed, // The maximum speed of the car
+        BigDecimal minPrice, // The minimum price of the car
+        BigDecimal maxPrice, // The maximum price of the car
+        Color color, // The color of the car
+        List&lt;String&gt; components // List of components of the car
+) {
+
+    /**
+     * Converts this `CarCriterionDto` object into a `CarCriterionFilteringView`
+     * object that can be used in database queries for car filtering.
+     *
+     * @return a `CarCriterionFilteringView` object containing the filtering criteria.
+     */
+    public CarCriterionFilteringView toFilteringView() {
+<span class="fc" id="L32">        return new CarCriterionFilteringView(brand, model, minSpeed, maxSpeed,</span>
+                minPrice, maxPrice, color, components);
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

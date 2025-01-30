@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarRepositoryCustomImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.persistence.impl</a> &gt; <span class="el_source">CarRepositoryCustomImpl.java</span></div><h1>CarRepositoryCustomImpl.java</h1><pre class="source lang-java linenums">package com.app.persistence.impl;
+
+import com.app.persistence.CarRepositoryCustom;
+import com.app.persistence.entity.CarEntity;
+import com.app.persistence.view.GroupByView;
+import com.app.persistence.view.GroupByAndPriceStatisticView;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.springframework.stereotype.Repository;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+/**
+ * Custom implementation of the {@link CarRepositoryCustom} interface.
+ * &lt;p&gt;
+ * This class provides custom queries for the {@link CarEntity} class using the JPA Criteria API.
+ * It includes methods for grouping cars by a given field and for retrieving price statistics.
+ * &lt;/p&gt;
+ */
+@Repository
+<span class="fc" id="L22">public class CarRepositoryCustomImpl implements CarRepositoryCustom {</span>
+
+    /**
+     * The {@link EntityManager} instance used to interact with the database.
+     */
+    @PersistenceContext
+    private EntityManager em;
+
+    /**
+     * Groups cars by a specified field and counts the number of cars in each group.
+     * &lt;p&gt;
+     * This method dynamically groups the cars by a specified field (e.g., brand, model, color)
+     * and counts the number of cars in each group. The result is returned as a list of {@link GroupByView} objects.
+     * &lt;/p&gt;
+     *
+     * @param field the field to group by (e.g., &quot;brand&quot;, &quot;model&quot;, &quot;color&quot;)
+     * @return a list of {@link GroupByView} objects representing the grouped cars
+     */
+    @Override
+    public List&lt;GroupByView&lt;Object&gt;&gt; groupByField(String field) {
+<span class="fc" id="L42">        var cb = em.getCriteriaBuilder();</span>
+<span class="fc" id="L43">        var query = cb.createQuery(Object[].class);</span>
+<span class="fc" id="L44">        var root = query.from(CarEntity.class);</span>
+
+<span class="fc" id="L46">        query.groupBy(root.get(field));</span>
+<span class="fc" id="L47">        query.multiselect(root.get(field), cb.count(root));</span>
+
+<span class="fc" id="L49">        var result = em.createQuery(query).getResultList();</span>
+<span class="fc" id="L50">        return result</span>
+<span class="fc" id="L51">                .stream()</span>
+<span class="fc" id="L52">                .map(el -&gt; new GroupByView&lt;&gt;(el[0], (Long) el[1]))</span>
+<span class="fc" id="L53">                .toList();</span>
+    }
+
+    /**
+     * Groups cars by a specified field and retrieves price statistics (minimum and maximum price) for each group.
+     * &lt;p&gt;
+     * This method dynamically groups the cars by a specified field (e.g., brand, model, color)
+     * and calculates the minimum and maximum price for each group. The result is returned as a list of
+     * {@link GroupByAndPriceStatisticView} objects.
+     * &lt;/p&gt;
+     *
+     * @param field the field to group by (e.g., &quot;brand&quot;, &quot;model&quot;, &quot;color&quot;)
+     * @return a list of {@link GroupByAndPriceStatisticView} objects representing the grouped cars with price statistics
+     */
+    public List&lt;GroupByAndPriceStatisticView&lt;Object&gt;&gt; groupByAndPriceStatisticField(String field) {
+<span class="fc" id="L68">        var cb = em.getCriteriaBuilder();</span>
+<span class="fc" id="L69">        var query = cb.createQuery(Object[].class);</span>
+<span class="fc" id="L70">        var root = query.from(CarEntity.class);</span>
+
+<span class="fc" id="L72">        query.groupBy(root.get(field));</span>
+<span class="fc" id="L73">        query.multiselect(root.get(field), cb.min(root.get(&quot;price&quot;)), cb.max(root.get(&quot;price&quot;)));</span>
+
+<span class="fc" id="L75">        var result = em.createQuery(query).getResultList();</span>
+
+<span class="fc" id="L77">        return result</span>
+<span class="fc" id="L78">                .stream()</span>
+<span class="fc" id="L79">                .map(element -&gt;</span>
+<span class="fc" id="L80">                        new GroupByAndPriceStatisticView&lt;&gt;(element[0], (BigDecimal) element[1], (BigDecimal) element[2]))</span>
+<span class="fc" id="L81">                .toList();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

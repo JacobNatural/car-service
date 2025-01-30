@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.controller</a> &gt; <span class="el_source">GlobalExceptionHandler.java</span></div><h1>GlobalExceptionHandler.java</h1><pre class="source lang-java linenums">package com.app.controller;
+
+import com.app.controller.dto.ResponseDto;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+/**
+ * Global exception handler that handles various types of exceptions and returns appropriate HTTP responses.
+ * The handler catches exceptions thrown within controllers and returns well-formed responses with specific HTTP statuses.
+ */
+@RestControllerAdvice
+<span class="fc" id="L16">public class GlobalExceptionHandler {</span>
+
+    /**
+     * Handles IllegalArgumentException thrown in the application.
+     *
+     * @param ex The exception thrown.
+     * @return A ResponseDto containing the error message.
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseDto&lt;String&gt; illegalArgumentExceptionHandler(IllegalArgumentException ex) {
+<span class="fc" id="L27">        return new ResponseDto&lt;&gt;(ex.getMessage());</span>
+    }
+
+    /**
+     * Handles EntityNotFoundException thrown when an entity is not found.
+     *
+     * @param ex The exception thrown.
+     * @return A ResponseDto containing the error message.
+     */
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseDto&lt;String&gt; entityNotFoundExceptionHandler(EntityNotFoundException ex) {
+<span class="fc" id="L39">        return new ResponseDto&lt;&gt;(ex.getMessage());</span>
+    }
+
+    /**
+     * Handles DataIntegrityViolationException thrown when a data integrity violation occurs,
+     * such as when an entry with a duplicate key is found in the database.
+     *
+     * @param ex The exception thrown.
+     * @return A ResponseDto containing a specific error message.
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseDto&lt;String&gt; dataIntegrityViolationExceptionHandler(DataIntegrityViolationException ex) {
+<span class="fc" id="L52">        return new ResponseDto&lt;&gt;(&quot;An entry with the given key already exists in the database.&quot;);</span>
+    }
+
+    /**
+     * Handles all other unexpected exceptions.
+     *
+     * @param e The exception thrown.
+     * @return A ResponseDto containing the exception message.
+     */
+    @ExceptionHandler({Exception.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseDto&lt;String&gt; handleUnexpectedExceptions(Exception e) {
+<span class="fc" id="L64">        return new ResponseDto&lt;&gt;(e.getMessage());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

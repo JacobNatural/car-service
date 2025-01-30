@@ -1,0 +1,17 @@
+  services:
+
+    mysql-test:
+      image: mysql:latest
+      volumes:
+        - mysql-test:/var/lib/mysql
+      environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: db_1
+        MYSQL_USER: user
+        MYSQL_PASSWORD: user
+        MYSQL_TCP_PORT: 3306
+      ports:
+        - '3306:3306'
+
+  volumes:
+    mysql-test:

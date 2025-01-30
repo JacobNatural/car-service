@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResponseDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.controller.dto</a> &gt; <span class="el_source">ResponseDto.java</span></div><h1>ResponseDto.java</h1><pre class="source lang-java linenums">package com.app.controller.dto;
+
+/**
+ * A generic DTO class used to represent a response, containing either a data payload or an error message.
+ * It allows the flexible handling of both successful data responses and error responses.
+ *
+ * @param &lt;T&gt; the type of the data object contained in the response
+ */
+<span class="fc" id="L9">public record ResponseDto&lt;T&gt;(</span>
+        /**
+         * The data object that is returned in a successful response.
+         * This field may be {@code null} if there is an error response.
+         */
+        T data,
+
+        /**
+         * The error message in case of failure.
+         * This field may be {@code null} if the response contains valid data.
+         */
+        String error
+) {
+
+    /**
+     * Constructs a {@code ResponseDto} with the provided data and {@code null} as the error message.
+     *
+     * @param data the data to be returned in the response
+     */
+    public ResponseDto(T data){
+<span class="fc" id="L29">        this(data, null);</span>
+<span class="fc" id="L30">    }</span>
+
+    /**
+     * Constructs a {@code ResponseDto} with the provided error message and {@code null} as the data.
+     *
+     * @param error the error message to be returned in the response
+     */
+    public ResponseDto(String error){
+<span class="fc" id="L38">        this(null, error);</span>
+<span class="fc" id="L39">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

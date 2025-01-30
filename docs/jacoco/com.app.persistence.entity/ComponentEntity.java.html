@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComponentEntity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.persistence.entity</a> &gt; <span class="el_source">ComponentEntity.java</span></div><h1>ComponentEntity.java</h1><pre class="source lang-java linenums">package com.app.persistence.entity;
+
+import com.app.controller.dto.components.ComponentDto;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Represents a component entity in the database.
+ * &lt;p&gt;
+ * The {@code ComponentEntity} class is a JPA entity representing a car component record in the database.
+ * Each component can be associated with multiple cars, and this relationship is represented by a
+ * many-to-many relationship with the {@link CarEntity} class.
+ * &lt;/p&gt;
+ * &lt;p&gt;
+ * The entity is mapped to the {@code components} table, and the name of each component must be unique
+ * within the database.
+ * &lt;/p&gt;
+ */
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
+@Entity
+@Table(name = &quot;components&quot;)
+public class ComponentEntity extends BaseEntity {
+
+    /**
+     * The name of the component.
+     * This field must be unique and cannot be null.
+     */
+    @Column(unique = true, nullable = false)
+    private String name;
+
+    /**
+     * The cars associated with this component.
+     * This represents a many-to-many relationship between components and cars.
+     */
+    @ManyToMany
+    @JoinTable(
+            name = &quot;cars_components&quot;,
+            joinColumns = @JoinColumn(name = &quot;component_id&quot;),
+            inverseJoinColumns = @JoinColumn(name = &quot;car_id&quot;)
+    )
+    @Builder.Default
+    private List&lt;CarEntity&gt; cars = new ArrayList&lt;&gt;();
+
+    /**
+     * Converts this {@link ComponentEntity} into a {@link ComponentDto} (Data Transfer Object).
+     * &lt;p&gt;
+     * This method maps the properties of the {@code ComponentEntity} to a {@code ComponentDto},
+     * which is used for sending component data as a response in the API.
+     * &lt;/p&gt;
+     *
+     * @return a {@code ComponentDto} object representing this component entity
+     */
+    public ComponentDto toComponentDto() {
+<span class="fc" id="L63">        return new ComponentDto(id, name);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

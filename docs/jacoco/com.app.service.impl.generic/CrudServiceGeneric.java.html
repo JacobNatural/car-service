@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CrudServiceGeneric.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.service.impl.generic</a> &gt; <span class="el_source">CrudServiceGeneric.java</span></div><h1>CrudServiceGeneric.java</h1><pre class="source lang-java linenums">package com.app.service.impl.generic;
+
+import com.app.persistence.CrudRepository;
+import com.app.service.CrudService;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
+/**
+ * A generic service implementation for CRUD operations, providing common
+ * functionality for managing entities.
+ * &lt;p&gt;
+ * This abstract class implements the {@link CrudService} interface and
+ * provides default implementations for the basic CRUD operations, such as
+ * finding, deleting, and listing entities by ID. The class is generic, which
+ * means it can be used with any entity type and identifier type.
+ * &lt;/p&gt;
+ *
+ * @param &lt;T&gt; the type of the entity.
+ * @param &lt;U&gt; the type of the identifier (primary key) of the entity.
+ */
+@RequiredArgsConstructor
+public abstract class CrudServiceGeneric&lt;T, U&gt; implements CrudService&lt;T, U&gt; {
+
+    /**
+     * The repository used to perform CRUD operations on the entity.
+     */
+    protected final CrudRepository&lt;T, U&gt; crudRepository;
+
+    /**
+     * Finds an entity by its identifier.
+     *
+     * @param id the identifier of the entity to be found.
+     * @return the entity found by the given identifier.
+     * @throws EntityNotFoundException if no entity is found with the given identifier.
+     */
+    public T findById(U id) {
+<span class="fc" id="L39">        return crudRepository</span>
+<span class="fc" id="L40">                .findById(id)</span>
+<span class="fc" id="L41">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Element not found.&quot;));</span>
+    }
+
+    /**
+     * Finds all entities by their identifiers.
+     *
+     * @param ids a list of identifiers of the entities to be found.
+     * @return a list of entities found by the given identifiers.
+     * @throws EntityNotFoundException if not all entities are found for the given identifiers.
+     */
+    public List&lt;T&gt; findAllById(List&lt;U&gt; ids) {
+<span class="fc" id="L52">        var elements = crudRepository.findAllById(ids);</span>
+
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (elements.size() != ids.size()) {</span>
+<span class="fc" id="L55">            throw new EntityNotFoundException(&quot;Not all elements were found.&quot;);</span>
+        }
+
+<span class="fc" id="L58">        return elements;</span>
+    }
+
+    /**
+     * Finds all entities.
+     *
+     * @return a list of all entities.
+     */
+    public List&lt;T&gt; findAll() {
+<span class="fc" id="L67">        return crudRepository.findAll();</span>
+    }
+
+    /**
+     * Deletes an entity by its identifier.
+     *
+     * @param id the identifier of the entity to be deleted.
+     * @return the identifier of the deleted entity.
+     * @throws EntityNotFoundException if no entity is found with the given identifier.
+     */
+    public U deleteById(U id) {
+<span class="fc" id="L78">        var element = crudRepository</span>
+<span class="fc" id="L79">                .findById(id)</span>
+<span class="fc" id="L80">                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Element not found.&quot;));</span>
+<span class="fc" id="L81">        crudRepository.delete(element);</span>
+<span class="fc" id="L82">        return id;</span>
+    }
+
+    /**
+     * Deletes all entities by their identifiers.
+     *
+     * @param ids a list of identifiers of the entities to be deleted.
+     * @return a list of identifiers of the deleted entities.
+     * @throws EntityNotFoundException if not all entities are found for the given identifiers.
+     */
+    public List&lt;U&gt; deleteAllById(List&lt;U&gt; ids) {
+<span class="fc" id="L93">        var elements = crudRepository.findAllById(ids);</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        if (elements.size() != ids.size()) {</span>
+<span class="fc" id="L95">            throw new EntityNotFoundException(&quot;Not all elements were found.&quot;);</span>
+        }
+
+<span class="fc" id="L98">        crudRepository.deleteAll(elements);</span>
+
+<span class="fc" id="L100">        return ids;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

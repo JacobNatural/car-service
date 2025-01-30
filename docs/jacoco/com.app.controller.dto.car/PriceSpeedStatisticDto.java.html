@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceSpeedStatisticDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.controller.dto.car</a> &gt; <span class="el_source">PriceSpeedStatisticDto.java</span></div><h1>PriceSpeedStatisticDto.java</h1><pre class="source lang-java linenums">package com.app.controller.dto.car;
+
+import java.math.BigDecimal;
+
+/**
+ * Data Transfer Object (DTO) for holding price and speed statistics of cars.
+ * This object contains information about the minimum, maximum, and average price
+ * and speed of the cars.
+ */
+<span class="fc" id="L10">public record PriceSpeedStatisticDto(</span>
+        /**
+         * The minimum price of the cars in the selected group.
+         */
+        BigDecimal minPrice,
+
+        /**
+         * The maximum price of the cars in the selected group.
+         */
+        BigDecimal maxPrice,
+
+        /**
+         * The average price of the cars in the selected group.
+         */
+        double avgPrice,
+
+        /**
+         * The minimum speed of the cars in the selected group.
+         */
+        int minSpeed,
+
+        /**
+         * The maximum speed of the cars in the selected group.
+         */
+        int maxSpeed,
+
+        /**
+         * The average speed of the cars in the selected group.
+         */
+        double avgSpeed
+) {
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

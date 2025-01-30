@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarEntity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.persistence.entity</a> &gt; <span class="el_source">CarEntity.java</span></div><h1>CarEntity.java</h1><pre class="source lang-java linenums">package com.app.persistence.entity;
+
+import com.app.color.Color;
+import com.app.controller.dto.car.CarDto;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Represents a car entity in the database.
+ * &lt;p&gt;
+ * The {@code CarEntity} class is a JPA entity representing a car record in the database.
+ * It contains the basic properties of a car, such as brand, model, price, speed, and color,
+ * as well as the components associated with the car.
+ * &lt;/p&gt;
+ * &lt;p&gt;
+ * The entity uses a many-to-many relationship with the {@link ComponentEntity} class,
+ * and it supports cascading operations for persisting and merging associated components.
+ * &lt;/p&gt;
+ * &lt;p&gt;
+ * The class is mapped to the {@code cars} table, with a unique constraint on the combination of
+ * the {@code brand} and {@code model} columns to ensure uniqueness of each car model.
+ * &lt;/p&gt;
+ */
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+@SuperBuilder
+@Table(
+        name = &quot;cars&quot;,
+        uniqueConstraints = @UniqueConstraint(columnNames = {&quot;brand&quot;, &quot;model&quot;}))
+@Entity
+public class CarEntity extends BaseEntity {
+
+    /**
+     * The brand of the car.
+     */
+    private String brand;
+
+    /**
+     * The model of the car.
+     */
+    private String model;
+
+    /**
+     * The price of the car.
+     */
+    private BigDecimal price;
+
+    /**
+     * The speed of the car (in km/h).
+     */
+    private int speed;
+
+    /**
+     * The color of the car.
+     * The color is an enum, which is persisted as a string.
+     */
+    @Enumerated(EnumType.STRING)
+    private Color color;
+
+    /**
+     * The components associated with the car.
+     * This represents a many-to-many relationship between cars and components.
+     */
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = &quot;cars_components&quot;,
+            joinColumns = @JoinColumn(name = &quot;car_id&quot;),
+            inverseJoinColumns = @JoinColumn(name = &quot;component_id&quot;)
+    )
+    @Builder.Default
+    private List&lt;ComponentEntity&gt; components = new ArrayList&lt;&gt;();
+
+    /**
+     * Creates a new instance of {@link CarEntity} with the specified list of components.
+     * &lt;p&gt;
+     * This method creates a copy of the current car entity with a new list of components.
+     * &lt;/p&gt;
+     *
+     * @param components the list of components to associate with the car
+     * @return a new {@code CarEntity} instance with the specified components
+     */
+    public CarEntity withComponents(List&lt;ComponentEntity&gt; components) {
+<span class="fc" id="L89">        return CarEntity.builder()</span>
+<span class="fc" id="L90">                .brand(brand)</span>
+<span class="fc" id="L91">                .model(model)</span>
+<span class="fc" id="L92">                .price(price)</span>
+<span class="fc" id="L93">                .speed(speed)</span>
+<span class="fc" id="L94">                .color(color)</span>
+<span class="fc" id="L95">                .components(components)</span>
+<span class="fc" id="L96">                .build();</span>
+    }
+
+    /**
+     * Converts this {@link CarEntity} into a {@link CarDto} (Data Transfer Object).
+     * &lt;p&gt;
+     * This method maps the properties of the {@code CarEntity} to a {@code CarDto},
+     * which is used for sending car data as a response in the API.
+     * &lt;/p&gt;
+     *
+     * @return a {@code CarDto} object representing this car entity
+     */
+    public CarDto toCarDto() {
+<span class="fc" id="L109">        return new CarDto(id, brand, model, speed, price, color,</span>
+<span class="fc" id="L110">                components.stream().map(ComponentEntity::getName).toList());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

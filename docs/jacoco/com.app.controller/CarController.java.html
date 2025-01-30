@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.controller</a> &gt; <span class="el_source">CarController.java</span></div><h1>CarController.java</h1><pre class="source lang-java linenums">package com.app.controller;
+
+import com.app.controller.dto.*;
+import com.app.controller.dto.car.*;
+import com.app.controller.dto.components.ComponentsWithCarsDto;
+import com.app.persistence.entity.CarEntity;
+import com.app.service.CarService;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+/**
+ * REST controller for managing cars.
+ * Provides endpoints for creating, updating, retrieving, deleting, and sorting cars.
+ * Also includes filtering and statistics functionality related to cars.
+ */
+@RestController
+@RequestMapping(&quot;/cars&quot;)
+@RequiredArgsConstructor
+public class CarController {
+
+    private final CarService carService;
+
+    /**
+     * Creates a new car and returns its ID.
+     *
+     * @param createCarDto Data required to create a car.
+     * @return ResponseDto containing the ID of the created car.
+     */
+    @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseDto&lt;Long&gt; createCar(@RequestBody CreateCarDto createCarDto) {
+<span class="fc" id="L37">        return new ResponseDto&lt;&gt;(carService.save(createCarDto));</span>
+    }
+
+    /**
+     * Creates multiple new cars and returns their IDs.
+     *
+     * @param createCarDtos List of data required to create multiple cars.
+     * @return ResponseDto containing the list of IDs of the created cars.
+     */
+    @PostMapping(&quot;/all&quot;)
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseDto&lt;List&lt;Long&gt;&gt; createCars(@RequestBody List&lt;CreateCarDto&gt; createCarDtos) {
+<span class="fc" id="L49">        return new ResponseDto&lt;&gt;(carService.saveAll(createCarDtos));</span>
+    }
+
+    /**
+     * Retrieves a car by its ID.
+     *
+     * @param id The ID of the car to retrieve.
+     * @return ResponseDto containing the car data.
+     */
+    @GetMapping(&quot;/{id}&quot;)
+    @ResponseStatus(HttpStatus.FOUND)
+    public ResponseDto&lt;CarDto&gt; findCarById(@PathVariable Long id) {
+<span class="fc" id="L61">        return new ResponseDto&lt;&gt;(carService.findById(id).toCarDto());</span>
+    }
+
+    /**
+     * Retrieves a list of cars by their IDs.
+     *
+     * @param ids List of car IDs.
+     * @return ResponseDto containing a list of car data.
+     */
+    @GetMapping()
+    @ResponseStatus(HttpStatus.FOUND)
+    public ResponseDto&lt;List&lt;CarDto&gt;&gt; findAllCars(@RequestParam List&lt;Long&gt; ids) {
+<span class="fc" id="L73">        return new ResponseDto&lt;&gt;(carService</span>
+<span class="fc" id="L74">                .findAllById(ids)</span>
+<span class="fc" id="L75">                .stream()</span>
+<span class="fc" id="L76">                .map(CarEntity::toCarDto)</span>
+<span class="fc" id="L77">                .toList());</span>
+    }
+
+    /**
+     * Deletes a car by its ID.
+     *
+     * @param id The ID of the car to delete.
+     * @return ResponseDto containing the ID of the deleted car.
+     */
+    @DeleteMapping(&quot;/{id}&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto&lt;Long&gt; deleteCarById(@PathVariable Long id) {
+<span class="fc" id="L89">        return new ResponseDto&lt;&gt;(carService.deleteById(id));</span>
+    }
+
+    /**
+     * Deletes multiple cars by their IDs.
+     *
+     * @param ids List of car IDs to delete.
+     * @return ResponseDto containing a list of deleted car IDs.
+     */
+    @DeleteMapping()
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto&lt;List&lt;Long&gt;&gt; deleteCarById(@RequestParam List&lt;Long&gt; ids) {
+<span class="fc" id="L101">        return new ResponseDto&lt;&gt;(carService.deleteAllById(ids));</span>
+    }
+
+    /**
+     * Retrieves a list of cars sorted by specified parameters and direction.
+     *
+     * @param parameters List of parameters to sort by.
+     * @param direction  Sorting direction (&quot;asc&quot; or &quot;desc&quot;).
+     * @return ResponseDto containing a list of sorted car data.
+     */
+    @GetMapping(&quot;/sort&quot;)
+    public ResponseDto&lt;List&lt;CarDto&gt;&gt; getSortedCarAsc(@RequestParam List&lt;String&gt; parameters, @RequestParam String direction) {
+<span class="fc" id="L113">        return new ResponseDto&lt;&gt;(carService.sortedCarsBy(parameters, direction));</span>
+    }
+
+    /**
+     * Retrieves a list of cars with speed between specified minimum and maximum values.
+     *
+     * @param minSpeed Minimum speed.
+     * @param maxSpeed Maximum speed.
+     * @return ResponseDto containing a list of cars within the speed range.
+     */
+    @GetMapping(&quot;/{minSpeed}/{maxSpeed}&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto&lt;List&lt;CarDto&gt;&gt; getCarsWithSpeedBetween(
+            @PathVariable Integer minSpeed,
+            @PathVariable Integer maxSpeed) {
+<span class="fc" id="L128">        return new ResponseDto&lt;&gt;(carService.getCarsWithSpeedInterval(minSpeed, maxSpeed));</span>
+    }
+
+    /**
+     * Retrieves a list of cars based on the specified filter criteria.
+     *
+     * @param carCriterionDto Filtering criteria for the cars.
+     * @return ResponseDto containing a list of cars that match the filter.
+     */
+    @PostMapping(&quot;/filter&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto&lt;List&lt;CarDto&gt;&gt; getCarsFiltersBy(@RequestBody CarCriterionDto carCriterionDto) {
+<span class="fc" id="L140">        return new ResponseDto&lt;&gt;(carService.getCarsFilterBy(carCriterionDto));</span>
+    }
+
+    /**
+     * Groups cars by color and returns the number of cars in each group.
+     *
+     * @return ResponseDto containing the grouped cars by color and their counts.
+     */
+    @GetMapping(&quot;/color&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto&lt;List&lt;GroupByDto&lt;Object&gt;&gt;&gt; groupByColorAndAmount() {
+<span class="fc" id="L151">        return new ResponseDto&lt;&gt;(carService.groupByAndAmountOfCars(&quot;color&quot;));</span>
+    }
+
+    /**
+     * Groups cars by the specified parameter and returns the number of cars in each group.
+     *
+     * @param map The parameter by which to group the cars (e.g., &quot;color&quot;).
+     * @return ResponseDto containing the grouped cars and their counts.
+     */
+    @GetMapping(&quot;/group/{map}&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto&lt;List&lt;GroupByDto&lt;Object&gt;&gt;&gt; groupByAndAmount(@PathVariable String map) {
+<span class="fc" id="L163">        return new ResponseDto&lt;&gt;(carService.groupByAndAmountOfCars(map));</span>
+    }
+
+    /**
+     * Retrieves the price statistics (min, max, average) for cars grouped by a specified parameter.
+     *
+     * @return ResponseDto containing the price statistics.
+     */
+    @GetMapping(&quot;/statistic/price&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto&lt;List&lt;GroupByAndPriceStatisticDto&lt;Object&gt;&gt;&gt; groupByBrandAndMinMaxPriceStatistic() {
+<span class="fc" id="L174">        return new ResponseDto&lt;&gt;(carService.groupByAndMinMaxPriceStatistic(&quot;brand&quot;));</span>
+    }
+
+    /**
+     * Retrieves the price statistics (min, max, average) for cars grouped by a specified parameter.
+     *
+     * @param map The parameter by which to group the cars (e.g., &quot;price&quot;).
+     * @return ResponseDto containing the price statistics.
+     */
+    @GetMapping(&quot;/price/{map}&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto&lt;List&lt;GroupByAndPriceStatisticDto&lt;Object&gt;&gt;&gt; groupByAndMinMaxPriceStatistic(@PathVariable String map) {
+<span class="fc" id="L186">        return new ResponseDto&lt;&gt;(carService.groupByAndMinMaxPriceStatistic(map));</span>
+    }
+
+    /**
+     * Retrieves the price and speed statistics (min, max, average) for all cars.
+     *
+     * @return ResponseDto containing the price and speed statistics.
+     */
+    @GetMapping(&quot;/price-speed&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto&lt;PriceSpeedStatisticDto&gt; priceSpeedStatistic() {
+<span class="fc" id="L197">        return new ResponseDto&lt;&gt;(carService.priceSpeedStatistic());</span>
+    }
+
+    /**
+     * Retrieves cars sorted by components in a specified order (natural or custom).
+     *
+     * @param order The order to sort the cars (e.g., &quot;asc&quot; or &quot;desc&quot;).
+     * @return ResponseDto containing the sorted cars.
+     */
+    @GetMapping(&quot;/sort/components/{order}&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto&lt;List&lt;CarDto&gt;&gt; getCarsWithSortedComponentsNatural(@PathVariable String order) {
+<span class="fc" id="L209">        return new ResponseDto&lt;&gt;(carService.getCarsWithSortedComponents(order));</span>
+    }
+
+    /**
+     * Retrieves cars grouped by components and sorted by the number of cars in each group.
+     *
+     * @param order The order to sort the groups (e.g., &quot;asc&quot; or &quot;desc&quot;).
+     * @return ResponseDto containing the grouped cars by components.
+     */
+    @GetMapping(&quot;/components/{order}&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto&lt;List&lt;ComponentsWithCarsDto&gt;&gt; getCarsWithSortedGroupComponentsNatural(@PathVariable String order) {
+<span class="fc" id="L221">        return new ResponseDto&lt;&gt;(carService.groupByComponentsAndCarsSortedByAmountOfCars(order));</span>
+    }
+
+    /**
+     * Retrieves cars with a price close to a specified value.
+     *
+     * @param price The price to compare against.
+     * @return ResponseDto containing the cars close to the specified price.
+     */
+    @GetMapping(&quot;/close/{price}&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseDto&lt;List&lt;CarDto&gt;&gt; getCarCloseToPrice(@PathVariable BigDecimal price) {
+<span class="fc" id="L233">        return new ResponseDto&lt;&gt;(carService.getCarsCloseToPrice(price));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

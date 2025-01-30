@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CreateComponentDtoValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.validate</a> &gt; <span class="el_source">CreateComponentDtoValidator.java</span></div><h1>CreateComponentDtoValidator.java</h1><pre class="source lang-java linenums">package com.app.validate;
+
+import com.app.controller.dto.components.CreateComponentDto;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+/**
+ * {@code CreateComponentDtoValidator} is a component responsible for validating the data of a {@link CreateComponentDto}.
+ * It ensures that the component's name is non-null, non-empty, and matches a specific regex pattern.
+ */
+@Component
+public class CreateComponentDtoValidator implements Validator&lt;CreateComponentDto&gt; {
+
+    private final String nameRegex;
+
+    /**
+     * Constructs a new {@code CreateComponentDtoValidator} with the specified name validation regex.
+     *
+     * @param nameRegex the regex pattern for validating the component's name
+     */
+<span class="fc" id="L21">    public CreateComponentDtoValidator(@Value(&quot;${validate.components.regex.name}&quot;) String nameRegex) {</span>
+<span class="fc" id="L22">        this.nameRegex = nameRegex;</span>
+<span class="fc" id="L23">    }</span>
+
+    /**
+     * Validates the provided {@link CreateComponentDto}.
+     * The following validations are performed:
+     * &lt;ul&gt;
+     *     &lt;li&gt;The name cannot be null or empty.&lt;/li&gt;
+     *     &lt;li&gt;The name must match the specified regex pattern.&lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @param createComponentDto the {@link CreateComponentDto} to be validated
+     * @throws IllegalArgumentException if any validation check fails
+     */
+    @Override
+    public void validate(CreateComponentDto createComponentDto) {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (createComponentDto.name() == null) {</span>
+<span class="fc" id="L39">            throw new IllegalArgumentException(&quot;Component name cannot be null.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        if(createComponentDto.name().isEmpty()){</span>
+<span class="fc" id="L43">            throw new IllegalArgumentException(&quot;Component name cannot be empty.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        if(!createComponentDto.name().matches(nameRegex)){</span>
+<span class="fc" id="L47">            throw new IllegalArgumentException(&quot;The name does not match the pattern: &quot; + nameRegex + &quot;.&quot;);</span>
+        }
+<span class="fc" id="L49">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

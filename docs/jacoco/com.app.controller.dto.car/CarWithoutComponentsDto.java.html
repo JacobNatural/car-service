@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarWithoutComponentsDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.controller.dto.car</a> &gt; <span class="el_source">CarWithoutComponentsDto.java</span></div><h1>CarWithoutComponentsDto.java</h1><pre class="source lang-java linenums">package com.app.controller.dto.car;
+
+import com.app.color.Color;
+
+import java.math.BigDecimal;
+
+/**
+ * Data Transfer Object (DTO) representing a car without its components.
+ * Contains the details of a car including its ID, brand, model, speed, price, and color,
+ * but does not include information about its components.
+ */
+<span class="fc" id="L12">public record CarWithoutComponentsDto(</span>
+        /**
+         * The unique identifier for the car.
+         */
+        Long id,
+
+        /**
+         * The brand of the car (e.g., Toyota, Ford).
+         */
+        String brand,
+
+        /**
+         * The model of the car (e.g., Corolla, Mustang).
+         */
+        String model,
+
+        /**
+         * The speed of the car, in kilometers per hour (km/h).
+         */
+        int speed,
+
+        /**
+         * The price of the car.
+         */
+        BigDecimal price,
+
+        /**
+         * The color of the car.
+         */
+        Color color
+) { }
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

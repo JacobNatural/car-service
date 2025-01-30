@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CreateCarDtoValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.validate</a> &gt; <span class="el_source">CreateCarDtoValidator.java</span></div><h1>CreateCarDtoValidator.java</h1><pre class="source lang-java linenums">package com.app.validate;
+
+import com.app.controller.dto.car.CreateCarDto;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+
+/**
+ * {@code CreateCarDtoValidator} is a component responsible for validating the data of a {@link CreateCarDto}.
+ * It ensures that the provided {@link CreateCarDto} object meets various constraints, including
+ * non-null and non-empty values, matching patterns for the car's model and brand, as well as
+ * enforcing minimum speed and price limits.
+ */
+@Component
+public class CreateCarDtoValidator implements Validator&lt;CreateCarDto&gt; {
+
+    private final String modelRegex;
+    private final String brandRegex;
+    private final int minimumSpeed;
+    private final BigDecimal minimumPrice;
+
+    /**
+     * Constructs a new {@code CreateCarDtoValidator} with the specified validation parameters.
+     *
+     * @param minimumPrice the minimum price a car can have
+     * @param minimumSpeed the minimum speed a car can have
+     * @param brandRegex the regex pattern for validating the car brand
+     * @param modelRegex the regex pattern for validating the car model
+     */
+    public CreateCarDtoValidator(
+            @Value(&quot;${validate.car.min.price}&quot;) BigDecimal minimumPrice,
+            @Value(&quot;${validate.car.min.speed}&quot;) int minimumSpeed,
+            @Value(&quot;${validate.car.regex.brand}&quot;) String brandRegex,
+<span class="fc" id="L35">            @Value(&quot;${validate.car.regex.model}&quot;) String modelRegex) {</span>
+<span class="fc" id="L36">        this.minimumPrice = minimumPrice;</span>
+<span class="fc" id="L37">        this.minimumSpeed = minimumSpeed;</span>
+<span class="fc" id="L38">        this.brandRegex = brandRegex;</span>
+<span class="fc" id="L39">        this.modelRegex = modelRegex;</span>
+<span class="fc" id="L40">    }</span>
+
+    /**
+     * Validates the provided {@link CreateCarDto}.
+     * The following validations are performed:
+     * &lt;ul&gt;
+     *     &lt;li&gt;The model cannot be null, empty, or invalid according to the {@code modelRegex}.&lt;/li&gt;
+     *     &lt;li&gt;The brand cannot be null, empty, or invalid according to the {@code brandRegex}.&lt;/li&gt;
+     *     &lt;li&gt;The speed cannot be lower than the configured minimum speed.&lt;/li&gt;
+     *     &lt;li&gt;The price cannot be null or lower than the configured minimum price.&lt;/li&gt;
+     *     &lt;li&gt;The components cannot be null or empty.&lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @param createCarDto the {@link CreateCarDto} to be validated
+     * @throws IllegalArgumentException if any validation check fails
+     */
+    @Override
+    public void validate(CreateCarDto createCarDto) {
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (createCarDto.model() == null) {</span>
+<span class="fc" id="L60">            throw new IllegalArgumentException(&quot;Model cannot be null.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (createCarDto.model().isEmpty()) {</span>
+<span class="fc" id="L64">            throw new IllegalArgumentException(&quot;Model cannot be empty.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (!createCarDto.model().matches(modelRegex)) {</span>
+<span class="fc" id="L68">            throw new IllegalArgumentException(&quot;The model does not match the pattern: &quot; + modelRegex + &quot;.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (createCarDto.brand() == null) {</span>
+<span class="fc" id="L72">            throw new IllegalArgumentException(&quot;Brand cannot be null.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        if (createCarDto.brand().isEmpty()) {</span>
+<span class="fc" id="L76">            throw new IllegalArgumentException(&quot;Brand cannot be empty.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        if (!createCarDto.brand().matches(brandRegex)) {</span>
+<span class="fc" id="L80">            throw new IllegalArgumentException(&quot;The brand does not match the pattern: &quot; + brandRegex + &quot;.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (createCarDto.speed() &lt; minimumSpeed) {</span>
+<span class="fc" id="L84">            throw new IllegalArgumentException(&quot;The speed does not match the minimum speed: &quot; + minimumSpeed + &quot;.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (createCarDto.price() == null) {</span>
+<span class="fc" id="L88">            throw new IllegalArgumentException(&quot;Price cannot be null.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (createCarDto.price().compareTo(minimumPrice) &lt; 0) {</span>
+<span class="fc" id="L92">            throw new IllegalArgumentException(&quot;The price does not match the minimum price: &quot; + minimumPrice + &quot;.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        if (createCarDto.components() == null) {</span>
+<span class="fc" id="L96">            throw new IllegalArgumentException(&quot;Components cannot be null.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (createCarDto.components().isEmpty()) {</span>
+<span class="fc" id="L100">            throw new IllegalArgumentException(&quot;Components cannot be empty.&quot;);</span>
+        }
+<span class="fc" id="L102">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

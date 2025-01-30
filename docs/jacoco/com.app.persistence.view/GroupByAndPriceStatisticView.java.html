@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GroupByAndPriceStatisticView.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cars-spring-boot-jpa</a> &gt; <a href="index.source.html" class="el_package">com.app.persistence.view</a> &gt; <span class="el_source">GroupByAndPriceStatisticView.java</span></div><h1>GroupByAndPriceStatisticView.java</h1><pre class="source lang-java linenums">package com.app.persistence.view;
+
+import com.app.controller.dto.car.GroupByAndPriceStatisticDto;
+
+import java.math.BigDecimal;
+
+/**
+ * A record representing a view that groups entities by a certain field and provides price statistics
+ * such as the minimum and maximum price for each group.
+ * &lt;p&gt;
+ * This record is used to fetch statistical data related to a specific grouping (e.g., by brand, model, etc.)
+ * along with the corresponding price statistics (min and max prices) for each group.
+ * &lt;/p&gt;
+ *
+ * @param &lt;T&gt; the type of the field used for grouping (e.g., String for brand or model).
+ */
+<span class="fc" id="L17">public record GroupByAndPriceStatisticView&lt;T&gt;(</span>
+        T t,           // The field value (e.g., brand or model) that entities are grouped by.
+        BigDecimal min, // The minimum price in the group.
+        BigDecimal max  // The maximum price in the group.
+) {
+
+    /**
+     * Converts the current view to a {@link GroupByAndPriceStatisticDto} object.
+     *
+     * @return a DTO object containing the group field and the price statistics.
+     */
+    public GroupByAndPriceStatisticDto&lt;Object&gt; toGroupByAndPriceStatisticDto() {
+<span class="fc" id="L29">        return new GroupByAndPriceStatisticDto&lt;&gt;(t, min, max);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

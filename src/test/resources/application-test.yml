@@ -1,0 +1,23 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+  datasource:
+    url: jdbc:mysql://localhost:3306/db_1?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: user
+    password: user
+  defer-datasource-initialization: true
+
+validate:
+  car:
+    regex:
+      model: '[A-Z0-9 ]+'
+      brand: '[A-Z0-9 ]+'
+    min:
+      speed: 100
+      price: 10000.00
+  components:
+    regex:
+      name: '[A-Z0-9 ]+'
+
+

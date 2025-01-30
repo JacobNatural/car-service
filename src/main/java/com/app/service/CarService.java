@@ -1,96 +1,111 @@
 package com.app.service;
 
-import com.app.car.Car;
-import com.app.color.Color;
-import com.app.car.CarCriterion;
-import com.app.statistic.Statistic;
+import com.app.controller.dto.car.*;
+import com.app.controller.dto.components.ComponentsWithCarsDto;
+import com.app.persistence.entity.CarEntity;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Interface for car-related services that provides methods for querying and processing car data.
+ * Interface CarService defines the operations for managing car entities.
+ * It extends the CrudService interface to provide basic CRUD functionalities.
+ * Additionally, it includes methods for handling specific car-related queries
+ * such as saving, filtering, sorting, and aggregating car data.
  * <p>
- * This service includes operations for sorting, filtering, grouping, and computing statistics on a collection of {@link Car} objects.
+ * This service is responsible for performing operations like saving cars,
+ * getting cars within a specific speed interval, grouping cars by certain
+ * criteria, retrieving statistics, and more.
  * </p>
  */
-public interface CarService {
+public interface CarService extends CrudService<CarEntity, Long> {
 
     /**
-     * Returns a list of cars sorted by the specified comparator.
+     * Saves a new car based on the provided data transfer object (DTO).
      *
-     * @param comparator the comparator to use for sorting the cars
-     * @return a list of cars sorted according to the comparator
-     * @throws IllegalArgumentException if the comparator is {@code null}
+     * @param carDto the data transfer object containing the car information.
+     * @return the ID of the newly saved car.
      */
-    List<Car> sortedCarsBy(Comparator<Car> comparator);
+    Long save(CreateCarDto carDto);
 
     /**
-     * Returns a list of cars whose speed is within the specified interval.
+     * Saves a list of cars based on the provided list of data transfer objects (DTOs).
      *
-     * @param minSpeed the minimum speed
-     * @param maxSpeed the maximum speed
-     * @return a list of cars with speeds within the specified interval
-     * @throws IllegalArgumentException if {@code minSpeed} is greater than {@code maxSpeed}
+     * @param cars the list of data transfer objects representing cars.
+     * @return a list of IDs of the newly saved cars.
      */
-    List<Car> getCarsWithSpeedInterval(int minSpeed, int maxSpeed);
+    List<Long> saveAll(List<CreateCarDto> cars);
 
     /**
-     * Groups cars by color and counts the number of cars for each color.
+     * Retrieves a list of cars sorted by the specified parameters and direction.
      *
-     * @return a map where the keys are car colors and the values are the counts of cars for each color
+     * @param parameters the list of parameters by which to sort the cars.
+     * @param direction the direction of sorting ('asc' for ascending, 'desc' for descending).
+     * @return a list of sorted car DTOs.
      */
-    Map<Color, Long> groupByColorAndAmountOfCars();
+    List<CarDto> sortedCarsBy(List<String> parameters, String direction);
 
     /**
-     * Groups cars by brand and calculates the minimum and maximum price for each brand.
+     * Retrieves a list of cars within the specified speed interval.
      *
-     * @return a map where the keys are brand names and the values are statistics of minimum and maximum prices for each brand
+     * @param minSpeed the minimum speed of the cars to retrieve.
+     * @param maxSpeed the maximum speed of the cars to retrieve.
+     * @return a list of car DTOs within the specified speed range.
      */
-    Map<String, Statistic<BigDecimal>> groupByBrandAndMinMaxPriceStatistic();
+    List<CarDto> getCarsWithSpeedInterval(int minSpeed, int maxSpeed);
 
     /**
-     * Retrieves statistics for car prices and speeds.
+     * Groups cars by a specific field and returns the number of cars in each group.
      *
-     * @return a list of statistics containing information about prices and speeds
+     * @param map the field by which to group the cars.
+     * @return a list of group-by DTOs containing the field and the amount of cars in each group.
      */
-    List<Statistic<BigDecimal>> priceSpeedStatistic();
+    List<GroupByDto<Object>> groupByAndAmountOfCars(String map);
 
     /**
-     * Returns a list of cars with their components sorted by the specified comparator.
+     * Groups cars by a specific field and returns the minimum and maximum price for each group.
      *
-     * @param comparator the comparator to use for sorting the car components
-     * @return a list of cars with sorted components
-     * @throws IllegalArgumentException if the comparator is {@code null}
+     * @param map the field by which to group the cars.
+     * @return a list of group-by DTOs containing the field and price statistics (min/max).
      */
-    List<Car> getCarsWithSortedComponents(Comparator<String> comparator);
+    List<GroupByAndPriceStatisticDto<Object>> groupByAndMinMaxPriceStatistic(String map);
 
     /**
-     * Groups cars by their components and sorts the groups by the number of cars in each group.
+     * Retrieves the price and speed statistics for all cars (minimum, maximum, and average values).
      *
-     * @param comparator the comparator to use for sorting the groups by the number of cars
-     * @return a map where the keys are component names and the values are lists of cars, sorted by the number of cars in each group
-     * @throws IllegalArgumentException if the comparator is {@code null}
+     * @return the price and speed statistics DTO.
      */
-    Map<String, List<Car>> groupByComponentsAndCarsSortedByAmountOfComponents(Comparator<Integer> comparator);
+    PriceSpeedStatisticDto priceSpeedStatistic();
 
     /**
-     * Returns a list of cars whose price is closest to the specified price.
+     * Retrieves a list of cars with their components sorted according to the specified order.
      *
-     * @param price the price to compare against
-     * @return a list of cars with prices closest to the specified price
-     * @throws IllegalArgumentException if the price is {@code null} or less than or equal to zero
+     * @param order the sorting order ('asc' for ascending, 'desc' for descending).
+     * @return a list of car DTOs with sorted components.
      */
-    List<Car> getCarsCloseToPrice(BigDecimal price);
+    List<CarDto> getCarsWithSortedComponents(String order);
 
     /**
-     * Returns a list of cars that meet the specified criterion.
+     * Groups cars by their components and sorts them based on the amount of cars per component.
      *
-     * @param carCriterion the criterion to use for filtering cars
-     * @return a list of cars that meet the criterion
-     * @throws IllegalArgumentException if the carCriterion is {@code null}
+     * @param order the sorting order ('asc' for ascending, 'desc' for descending).
+     * @return a list of DTOs containing components and the associated cars sorted by the number of cars per component.
      */
-    List<Car> getCarsWithCriterion(CarCriterion carCriterion);
+    List<ComponentsWithCarsDto> groupByComponentsAndCarsSortedByAmountOfCars(String order);
+
+    /**
+     * Retrieves a list of cars whose prices are closest to the specified price.
+     *
+     * @param price the price to compare with.
+     * @return a list of car DTOs whose prices are closest to the specified price.
+     */
+    List<CarDto> getCarsCloseToPrice(BigDecimal price);
+
+    /**
+     * Retrieves a list of cars filtered by the provided criteria.
+     *
+     * @param carCriterionDto the criteria used for filtering the cars.
+     * @return a list of filtered car DTOs.
+     */
+    List<CarDto> getCarsFilterBy(CarCriterionDto carCriterionDto);
 }

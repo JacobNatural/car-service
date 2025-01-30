@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  devtools:
+    restart:
+      enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: create
+  datasource:
+    url: jdbc:mysql://mysql-car:3305/db_2?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: user
+    password: user
+
+
+validate:
+  car:
+    regex:
+      model: '[A-Z0-9 ]+'
+      brand: '[A-Z0-9 ]+'
+    min:
+      speed: 100
+      price: 10000.00
+  components:
+    regex:
+      name: '[A-Z0-9 ]+'
